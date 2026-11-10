@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "db:new": "supabase migration new",
     "db:push": "supabase db push --remote",
-    "functions:deploy": "supabase functions deploy team-admin --no-verify-jwt"
+    "functions:deploy": "supabase functions deploy team-admin --no-verify-jwt",
+    "db:seed": "node --env-file=.env scripts/seed-demo.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
