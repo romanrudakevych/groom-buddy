@@ -1,0 +1,5 @@
+project_id = "tmonokiftcaxkyzcumei"
+
+[functions.team-admin]
+# The function verifies the caller itself (owner check), so the gateway JWT check is off.
+verify_jwt = false
