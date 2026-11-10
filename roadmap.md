@@ -1,0 +1,3 @@
+- [x] Add Russian/Czech interface switching with Russian default.
+- [x] Add calendar visit quick view with owner contacts and edit handoff.
+- [x] Verify day/week clicks, new slots, profile links, and both languages.
