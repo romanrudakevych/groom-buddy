@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 export function SignInScreen() {
   const { t } = useI18n();
   const [mode, setMode] = useState<"in" | "forgot">("in");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // Dev-only prefill from .env.development.local; stripped from production builds.
+  const [email, setEmail] = useState(import.meta.env.DEV ? (import.meta.env["VITE_DEV_LOGIN_EMAIL"] ?? "") : "");
+  const [password, setPassword] = useState(import.meta.env.DEV ? (import.meta.env["VITE_DEV_LOGIN_PASSWORD"] ?? "") : "");
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
@@ -40,9 +41,9 @@ export function SignInScreen() {
           <div className="text-lg font-semibold">{t("appName")}</div>
           <div className="text-sm text-muted-foreground">{mode === "in" ? t("signIn") : t("forgotPassword")}</div>
         </div>
-        <Input type="email" placeholder={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Input type="email" autoComplete="username" placeholder={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} required />
         {mode === "in" && (
-          <Input type="password" placeholder={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
+          <Input type="password" autoComplete="current-password" placeholder={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
         )}
         <Button type="submit" className="w-full" disabled={busy}>{mode === "in" ? t("signIn") : t("sendAccessLink")}</Button>
         <button type="button" className="block w-full text-center text-sm underline" onClick={() => setMode(mode === "in" ? "forgot" : "in")}>
