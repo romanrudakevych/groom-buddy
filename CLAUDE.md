@@ -50,4 +50,4 @@ The schema exists only as SQL migrations. Never edit an applied migration; add a
 ## Conventions
 
 - `tsconfig` turns on `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature`, so index access returns `T | undefined` and env vars use bracket access (`import.meta.env["VITE_…"]`).
-- Hosting is a static SPA. Unknown paths fall back to `index.html` via `public/_redirects` (Netlify/Cloudflare) and `vercel.json`.
+- Hosting is a static SPA. Unknown paths fall back to `index.html` via `public/_redirects` (Netlify/Cloudflare) and `vercel.json`. GitHub Pages (`.github/workflows/deploy-pages.yml`) serves it from `/groom-buddy/`: the build sets `VITE_BASE`, the router uses `import.meta.env.BASE_URL` as basename, and `404.html` (a copy of `index.html`) is the fallback.

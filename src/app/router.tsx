@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, type RouteObject } from "react-router";
 
 import { NotFoundComponent, RootComponent, RootError } from "./RootLayout";
 import { AuditLogs } from "@/pages/AuditLogs";
@@ -16,7 +16,7 @@ import { TemplatesPage } from "@/pages/Templates";
 
 const title = (t: string) => ({ title: `${t} – CRM груминг-салона` });
 
-export const router = createBrowserRouter([
+const routes: RouteObject[] = [
   {
     path: "/",
     element: <RootComponent />,
@@ -45,4 +45,7 @@ export const router = createBrowserRouter([
     ],
   },
   { path: "*", element: <NotFoundComponent /> },
-]);
+];
+
+// BASE_URL is "/groom-buddy/" on GitHub Pages, "/" elsewhere (see vite.config.ts).
+export const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL });
