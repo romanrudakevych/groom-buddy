@@ -30,6 +30,8 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_PUBLIC_URL: ${{ vars.VITE_PUBLIC_URL }}
+          VITE_LOGIN_EMAIL: ${{ vars.VITE_LOGIN_EMAIL }}
+          VITE_LOGIN_PASSWORD: ${{ vars.VITE_LOGIN_PASSWORD }}
       # Pages has no rewrites: serve the SPA for unknown paths (deep links, reloads).
       - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3

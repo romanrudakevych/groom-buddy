@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 export function SignInScreen() {
   const { t } = useI18n();
   const [mode, setMode] = useState<"in" | "forgot">("in");
-  // Dev-only prefill from .env.development.local; stripped from production builds.
-  const [email, setEmail] = useState(import.meta.env.DEV ? (import.meta.env["VITE_DEV_LOGIN_EMAIL"] ?? "") : "");
-  const [password, setPassword] = useState(import.meta.env.DEV ? (import.meta.env["VITE_DEV_LOGIN_PASSWORD"] ?? "") : "");
+  // Optional login prefill (.env.development.local locally, repo variables on GitHub Pages).
+  const [email, setEmail] = useState(import.meta.env["VITE_LOGIN_EMAIL"] ?? "");
+  const [password, setPassword] = useState(import.meta.env["VITE_LOGIN_PASSWORD"] ?? "");
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
