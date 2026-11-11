@@ -886,7 +886,7 @@ const I18nContext: React.Context<I18nContextValue | null> =
   ((globalThis as Record<string, unknown>)["__crmI18nContext"] = createContext<I18nContextValue | null>(null));
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<UiLanguage>("ru");
+  const [lang, setLangState] = useState<UiLanguage>("cs");
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);

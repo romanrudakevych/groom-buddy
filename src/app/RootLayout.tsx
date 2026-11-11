@@ -13,7 +13,7 @@ import { SignInScreen } from "@/components/crm/SignInScreen";
 
 export const queryClient = new QueryClient();
 
-const DEFAULT_TITLE = "CRM груминг-салона";
+const DEFAULT_TITLE = "CRM psího salonu";
 
 /** Sets document.title from the deepest matched route's `handle.title`. */
 function usePageTitle() {
