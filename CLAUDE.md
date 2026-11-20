@@ -11,8 +11,8 @@ npm run dev                      # Vite dev server, http://localhost:5173 (needs
 npm run build                    # production build to dist/
 npm run lint                     # eslint (prettier runs as an eslint rule)
 npm run format                   # prettier --write .
-npx tsc --noEmit                 # type-check (no script for it; tsconfig is very strict)
-npx vitest run                   # all tests (src/lib/__tests__)
+npm run typecheck                # tsc --noEmit (tsconfig is very strict)
+npm test                         # vitest run: all tests (src/lib/__tests__)
 npx vitest run src/lib/__tests__/booking.test.ts   # single file
 npx vitest run -t "blocks Cash"                    # single test by name
 ```
@@ -50,4 +50,5 @@ The schema exists only as SQL migrations. Never edit an applied migration; add a
 ## Conventions
 
 - `tsconfig` turns on `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature`, so index access returns `T | undefined` and env vars use bracket access (`import.meta.env["VITE_…"]`).
+- CI (`.github/workflows/ci.yml`) runs lint, typecheck, tests and build on PRs and non-master pushes; `deploy-pages.yml` calls it before deploying `master`. Lint fails on Prettier formatting, so run `npm run format` before committing.
 - Hosting is a static SPA. Unknown paths fall back to `index.html` via `public/_redirects` (Netlify/Cloudflare) and `vercel.json`. GitHub Pages (`.github/workflows/deploy-pages.yml`) serves it from `/groom-buddy/`: the build sets `VITE_BASE`, the router uses `import.meta.env.BASE_URL` as basename, and `404.html` (a copy of `index.html`) is the fallback.

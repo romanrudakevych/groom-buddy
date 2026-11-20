@@ -1,5 +1,6 @@
 # Groom Buddy CRM
 
+[![CI](https://github.com/romanrudakevych/groom-buddy/actions/workflows/ci.yml/badge.svg)](https://github.com/romanrudakevych/groom-buddy/actions/workflows/ci.yml)
 [![Deploy to GitHub Pages](https://github.com/romanrudakevych/groom-buddy/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/romanrudakevych/groom-buddy/actions/workflows/deploy-pages.yml)
 
 A CRM for a dog-grooming business with two salons. It covers clients and their
@@ -135,8 +136,8 @@ VITE_LOGIN_PASSWORD=...
 | `npm run preview`          | Serve the production build locally                               |
 | `npm run lint`             | ESLint (Prettier runs as a rule)                                 |
 | `npm run format`           | Prettier `--write`                                               |
-| `npx tsc --noEmit`         | Type-check (no script for it)                                    |
-| `npx vitest run`           | Run the test suite                                               |
+| `npm run typecheck`        | Type-check (`tsc --noEmit`)                                      |
+| `npm test`                 | Run the test suite (`vitest run`)                                |
 | `npm run db:new -- <name>` | Create `supabase/migrations/<timestamp>_<name>.sql`              |
 | `npm run db:push`          | Apply pending migrations to the linked Supabase project          |
 | `npm run db:seed`          | Fill the linked project with demo data (`-- --clean` removes it) |
@@ -180,7 +181,15 @@ written by the triggers during seeding are kept.
 
 The app is hosted at **https://romanrudakevych.github.io/groom-buddy/** and is
 deployed by `.github/workflows/deploy-pages.yml` on every push to `master` (or
-manually from the Actions tab).
+manually from the Actions tab). The deploy runs CI first and stops if it fails.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every pull request and on pushes to other
+branches: `npm ci`, lint (including Prettier formatting), type-check, tests and
+a production build. For `master`, the deploy workflow calls the same workflow
+before building, so CI does not run twice. To block merging red PRs, require
+the `CI / check` status check in a branch protection rule for `master`.
 
 One-time setup:
 
@@ -261,7 +270,8 @@ visibility and assigned-dog counts.
 ## Project structure
 
 ```
-.github/workflows/deploy-pages.yml  # build + deploy to GitHub Pages on push to master
+.github/workflows/ci.yml            # lint, type-check, tests, build on PRs and branches
+.github/workflows/deploy-pages.yml  # CI, then build + deploy to GitHub Pages on push to master
 public/                             # favicon, robots.txt, _redirects
 scripts/seed-demo.mjs               # demo data seeder (npm run db:seed)
 supabase/
