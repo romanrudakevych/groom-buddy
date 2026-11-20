@@ -129,7 +129,11 @@ export function DogDialog({
   const mutation = useCrmMutation(async () => {
     const input = { ...form };
     if (photoFile) input.photo_path = await uploadDogPhoto(photoFile);
-    return saveDog(input, mode === "a" ? ownerId || null : null, mode === "b" ? newClient : undefined);
+    return saveDog(
+      input,
+      mode === "a" ? ownerId || null : null,
+      mode === "b" ? newClient : undefined,
+    );
   });
 
   const relationOk = mode === "a" ? !!ownerId : newClient.name.trim().length > 0;
@@ -144,7 +148,6 @@ export function DogDialog({
       },
       onError: (e: unknown) => toast.error(`${t("saveFailed")}: ${String(e)}`),
     });
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -176,10 +179,14 @@ export function DogDialog({
             />
           </label>
           {form.photo_url ? (
-            <Button variant="ghost" size="sm" onClick={() => {
-              setForm({ ...form, photo_url: null, photo_path: null });
-              setPhotoFile(null);
-            }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setForm({ ...form, photo_url: null, photo_path: null });
+                setPhotoFile(null);
+              }}
+            >
               {t("removePhoto")}
             </Button>
           ) : null}
@@ -415,9 +422,7 @@ export function DogDialog({
             </div>
           )}
           {!relationOk ? (
-            <p className="mt-2 text-xs text-destructive">
-              {t("dogNeedsOwner")}
-            </p>
+            <p className="mt-2 text-xs text-destructive">{t("dogNeedsOwner")}</p>
           ) : null}
         </div>
 

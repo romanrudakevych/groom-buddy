@@ -26,8 +26,15 @@ import {
 } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 
-
-type Row = { key: string; date: string; time: string; salon_id: string; label: string; detail: string; amount: number };
+type Row = {
+  key: string;
+  date: string;
+  time: string;
+  salon_id: string;
+  label: string;
+  detail: string;
+  amount: number;
+};
 
 export function Cashdesk() {
   const { data } = useCrm();
@@ -112,14 +119,29 @@ export function Cashdesk() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            <Input className="w-64" placeholder={t("search")} value={q} onChange={(e) => setQ(e.target.value)} />
+            <Input
+              className="w-64"
+              placeholder={t("search")}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
             <label className="flex items-center gap-2 text-sm">
               {t("dateFrom")}
-              <Input type="date" className="w-40" value={from} onChange={(e) => setFrom(e.target.value)} />
+              <Input
+                type="date"
+                className="w-40"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
             </label>
             <label className="flex items-center gap-2 text-sm">
               {t("dateTo")}
-              <Input type="date" className="w-40" value={to} onChange={(e) => setTo(e.target.value)} />
+              <Input
+                type="date"
+                className="w-40"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
             </label>
           </div>
           {journal.length === 0 ? (
@@ -138,11 +160,15 @@ export function Cashdesk() {
               <tbody className="divide-y">
                 {journal.map((r) => (
                   <tr key={r.key}>
-                    <td className="py-1">{formatDate(r.date)} {r.time}</td>
+                    <td className="py-1">
+                      {formatDate(r.date)} {r.time}
+                    </td>
                     <td>{salonName(r.salon_id)}</td>
                     <td>{r.label}</td>
                     <td className="text-muted-foreground">{r.detail}</td>
-                    <td className={`text-right font-medium ${r.amount < 0 ? "text-destructive" : ""}`}>
+                    <td
+                      className={`text-right font-medium ${r.amount < 0 ? "text-destructive" : ""}`}
+                    >
                       {r.amount > 0 ? "+" : ""}
                       {czk(r.amount)}
                     </td>
@@ -154,7 +180,11 @@ export function Cashdesk() {
         </CardContent>
       </Card>
 
-      <CashOpDialog open={open} onOpenChange={setOpen} defaultSalon={salon === "all" ? "" : salon} />
+      <CashOpDialog
+        open={open}
+        onOpenChange={setOpen}
+        defaultSalon={salon === "all" ? "" : salon}
+      />
     </div>
   );
 }
@@ -170,7 +200,13 @@ function CashOpDialog({
 }) {
   const { data } = useCrm();
   const { t, tr } = useI18n();
-  const blank = (): CashOpInput => ({ salon_id: defaultSalon, type: "Vklad", amount: 0, date: todayISO(), note: "" });
+  const blank = (): CashOpInput => ({
+    salon_id: defaultSalon,
+    type: "Vklad",
+    amount: 0,
+    date: todayISO(),
+    note: "",
+  });
   const [form, setForm] = useState<CashOpInput>(blank);
   const m = useCrmMutation(async () => saveCashOp(form));
   const canSave = !!form.salon_id && form.amount > 0 && !!form.date;
@@ -198,7 +234,11 @@ function CashOpDialog({
             />
           </Field>
           <Field label={t("operationType")} required>
-            <Pick value={form.type} onChange={(v) => setForm({ ...form, type: v })} options={opts(CASH_OP_TYPES, tr)} />
+            <Pick
+              value={form.type}
+              onChange={(v) => setForm({ ...form, type: v })}
+              options={opts(CASH_OP_TYPES, tr)}
+            />
           </Field>
           <Field label={t("amountCzk")} required>
             <Input
@@ -209,11 +249,18 @@ function CashOpDialog({
             />
           </Field>
           <Field label={t("date")} required>
-            <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+            <Input
+              type="date"
+              value={form.date}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
+            />
           </Field>
           <div className="sm:col-span-2">
             <Field label={t("notes")}>
-              <Textarea value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
+              <Textarea
+                value={form.note}
+                onChange={(e) => setForm({ ...form, note: e.target.value })}
+              />
             </Field>
           </div>
         </div>

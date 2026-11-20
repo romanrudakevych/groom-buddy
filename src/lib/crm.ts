@@ -15,7 +15,13 @@ export const BEHAVIORS = [
   "Potřebuje přestávky",
 ] as const;
 export const SEXES = ["Samec", "Samice"] as const;
-export const STATUSES = ["Naplánováno", "Potvrzeno", "Dokončeno", "Zrušeno", "Nedostavil se"] as const;
+export const STATUSES = [
+  "Naplánováno",
+  "Potvrzeno",
+  "Dokončeno",
+  "Zrušeno",
+  "Nedostavil se",
+] as const;
 /** Planned or confirmed: the visit is still expected to happen. */
 export const isUpcomingStatus = (s: string) => s === "Naplánováno" || s === "Potvrzeno";
 export const SPECIALTIES = [
@@ -127,7 +133,14 @@ export type CashOperation = {
 /** Signed cash effect: deposits add, expenses and collections subtract. */
 export const cashOpSign = (type: string) => (type === "Vklad" ? 1 : -1);
 export const CONTACT_RESULTS = ["Objednal se", "Kontaktován", "Nedovolal se", "Ztracený"] as const;
-export const ABSENCE_REASONS = ["Stěhování", "Drahé", "Kvalita služeb", "Jiný salon", "Stříhají sami", "Jiné"] as const;
+export const ABSENCE_REASONS = [
+  "Stěhování",
+  "Drahé",
+  "Kvalita služeb",
+  "Jiný salon",
+  "Stříhají sami",
+  "Jiné",
+] as const;
 export type ReactivationContact = {
   id: string;
   dog_id: string;
@@ -158,25 +171,45 @@ export type CrmData = {
   contacts: ReactivationContact[];
   closings: CashClosing[];
 };
-export type CashClosing = { id: string; salon_id: string; date: string; expected: number; counted: number; note: string | null; created_at: string };
+export type CashClosing = {
+  id: string;
+  salon_id: string;
+  date: string;
+  expected: number;
+  counted: number;
+  note: string | null;
+  created_at: string;
+};
 
 /* ---------- loading ---------- */
 async function fetchAll(): Promise<CrmData> {
-  const [salons, clients, dogs, groomers, services, appointments, links, apptServices, shifts, cashOps, contacts, closings] =
-    await Promise.all([
-      supabase.from("salons").select("*").order("name"),
-      supabase.from("clients").select("*").order("name"),
-      supabase.from("dogs").select("*").order("name"),
-      supabase.from("groomers").select("*").order("name"),
-      supabase.from("services").select("*").order("sort_order"),
-      supabase.from("appointments").select("*").order("date"),
-      Promise.resolve({ data: [], error: null }),
-      supabase.from("appointment_services").select("*"),
-      supabase.from("shifts").select("*"),
-      supabase.from("cash_operations").select("*").order("date"),
-      supabase.from("reactivation_contacts").select("*").order("created_at"),
-      supabase.from("cash_closings").select("*"),
-    ]);
+  const [
+    salons,
+    clients,
+    dogs,
+    groomers,
+    services,
+    appointments,
+    links,
+    apptServices,
+    shifts,
+    cashOps,
+    contacts,
+    closings,
+  ] = await Promise.all([
+    supabase.from("salons").select("*").order("name"),
+    supabase.from("clients").select("*").order("name"),
+    supabase.from("dogs").select("*").order("name"),
+    supabase.from("groomers").select("*").order("name"),
+    supabase.from("services").select("*").order("sort_order"),
+    supabase.from("appointments").select("*").order("date"),
+    Promise.resolve({ data: [], error: null }),
+    supabase.from("appointment_services").select("*"),
+    supabase.from("shifts").select("*"),
+    supabase.from("cash_operations").select("*").order("date"),
+    supabase.from("reactivation_contacts").select("*").order("created_at"),
+    supabase.from("cash_closings").select("*"),
+  ]);
 
   const err = [
     salons,
@@ -352,7 +385,9 @@ export async function saveClient(input: ClientInput, dogIds: string[], newDog?: 
   let clientId = input.id;
   const payload = {
     ...input,
-    additional_contacts: input.additional_contacts.filter((c) => c.name.trim() || c.phone.trim()) as unknown as Json,
+    additional_contacts: input.additional_contacts.filter(
+      (c) => c.name.trim() || c.phone.trim(),
+    ) as unknown as Json,
   };
   delete payload.id;
   if (clientId) {
@@ -379,7 +414,10 @@ export async function saveClient(input: ClientInput, dogIds: string[], newDog?: 
 export async function saveDog(input: DogInput, ownerId: string | null, newClient?: ClientInput) {
   let owner = ownerId;
   if (newClient) {
-    const cp = { ...newClient, additional_contacts: newClient.additional_contacts as unknown as Json };
+    const cp = {
+      ...newClient,
+      additional_contacts: newClient.additional_contacts as unknown as Json,
+    };
     delete cp.id;
     const { data, error } = await supabase.from("clients").insert(cp).select("id").single();
     if (error) throw error;
@@ -415,21 +453,34 @@ export type GroomerInput = {
 };
 
 export const GROOMER_PALETTE = [
-  "#0d9488", "#7c3aed", "#d97706", "#059669", "#e11d48", "#4f46e5", "#0284c7", "#c026d3",
+  "#0d9488",
+  "#7c3aed",
+  "#d97706",
+  "#059669",
+  "#e11d48",
+  "#4f46e5",
+  "#0284c7",
+  "#c026d3",
 ];
 
 /** Persisted color, or a stable palette color derived from the groomer's position. */
 export function groomerColor(groomers: Groomer[], id: string): string {
   const g = groomers.find((x) => x.id === id);
   if (g?.color) return g.color;
-  const i = Math.max(0, groomers.findIndex((x) => x.id === id));
+  const i = Math.max(
+    0,
+    groomers.findIndex((x) => x.id === id),
+  );
   return GROOMER_PALETTE[i % GROOMER_PALETTE.length]!;
 }
 
 /** First palette color not used yet (for new groomers). */
 export function nextGroomerColor(groomers: Groomer[]): string {
   const used = new Set(groomers.map((g) => g.color));
-  return GROOMER_PALETTE.find((c) => !used.has(c)) ?? GROOMER_PALETTE[groomers.length % GROOMER_PALETTE.length]!;
+  return (
+    GROOMER_PALETTE.find((c) => !used.has(c)) ??
+    GROOMER_PALETTE[groomers.length % GROOMER_PALETTE.length]!
+  );
 }
 
 export async function saveGroomer(input: GroomerInput) {
@@ -533,7 +584,10 @@ export async function saveAppointment(input: AppointmentInput, services: Service
     if (error) throw error;
   }
   if (finalStatus !== staged.status) {
-    const { error } = await supabase.from("appointments").update({ status: finalStatus }).eq("id", id!);
+    const { error } = await supabase
+      .from("appointments")
+      .update({ status: finalStatus })
+      .eq("id", id!);
     if (error) throw error;
   }
 }
@@ -562,7 +616,10 @@ export async function setShift(
   }
   const { error } = await supabase
     .from("shifts")
-    .upsert({ groomer_id, week_start, day_of_week, value }, { onConflict: "groomer_id,week_start,day_of_week" });
+    .upsert(
+      { groomer_id, week_start, day_of_week, value },
+      { onConflict: "groomer_id,week_start,day_of_week" },
+    );
   if (error) throw error;
 }
 
@@ -640,9 +697,17 @@ export function retentionRate(appointments: Appointment[]) {
   return Math.round((repeat / total) * 100);
 }
 
-export type CashOpInput = { salon_id: string; type: string; amount: number; date: string; note: string };
+export type CashOpInput = {
+  salon_id: string;
+  type: string;
+  amount: number;
+  date: string;
+  note: string;
+};
 export async function saveCashOp(input: CashOpInput) {
-  const { error } = await supabase.from("cash_operations").insert({ ...input, note: input.note || null });
+  const { error } = await supabase
+    .from("cash_operations")
+    .insert({ ...input, note: input.note || null });
   if (error) throw error;
 }
 
@@ -658,7 +723,10 @@ export function groomerRetention(appointments: Appointment[], groomerId: string)
   return retentionRate(appointments.filter((a) => a.groomer_id === groomerId));
 }
 
-export function groomerDogCount(dogs: ReadonlyArray<Pick<Dog, "pinned_groomer_id">>, groomerId: string) {
+export function groomerDogCount(
+  dogs: ReadonlyArray<Pick<Dog, "pinned_groomer_id">>,
+  groomerId: string,
+) {
   return dogs.filter((dog) => dog.pinned_groomer_id === groomerId).length;
 }
 
@@ -666,18 +734,27 @@ export function groomerDogCount(dogs: ReadonlyArray<Pick<Dog, "pinned_groomer_id
 export const canDeleteAppointment = () => true;
 
 export async function deleteAppointment(id: string) {
-  const { error: e1 } = await supabase.from("appointment_services").delete().eq("appointment_id", id);
+  const { error: e1 } = await supabase
+    .from("appointment_services")
+    .delete()
+    .eq("appointment_id", id);
   if (e1) throw e1;
   const { error } = await supabase.from("appointments").delete().eq("id", id);
   if (error) throw error;
 }
 
 export async function deleteGroomer(id: string) {
-  const { data: appts, error: e1 } = await supabase.from("appointments").select("id").eq("groomer_id", id);
+  const { data: appts, error: e1 } = await supabase
+    .from("appointments")
+    .select("id")
+    .eq("groomer_id", id);
   if (e1) throw e1;
   const ids = (appts ?? []).map((a) => a.id);
   if (ids.length) {
-    const { error } = await supabase.from("appointment_services").delete().in("appointment_id", ids);
+    const { error } = await supabase
+      .from("appointment_services")
+      .delete()
+      .in("appointment_id", ids);
     if (error) throw error;
     const { error: e2 } = await supabase.from("appointments").delete().in("id", ids);
     if (e2) throw e2;
@@ -697,7 +774,12 @@ export async function deleteGroomer(id: string) {
 const daysBetween = (from: string, to: string) =>
   Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
 
-export type InactiveDog = { dog: Dog; lastVisit: string; days: number; lastContact: ReactivationContact | null };
+export type InactiveDog = {
+  dog: Dog;
+  lastVisit: string;
+  days: number;
+  lastContact: ReactivationContact | null;
+};
 
 /**
  * Dogs whose last completed visit is older than `thresholdDays`, with no upcoming
@@ -713,7 +795,10 @@ export function inactiveDogs(
   for (const dog of data.dogs) {
     const appts = data.appointments.filter((a) => a.dog_id === dog.id);
     if (appts.some((a) => isUpcomingStatus(a.status) && a.date >= today)) continue;
-    const done = appts.filter((a) => a.status === "Dokončeno" && a.date <= today).map((a) => a.date).sort();
+    const done = appts
+      .filter((a) => a.status === "Dokončeno" && a.date <= today)
+      .map((a) => a.date)
+      .sort();
     const lastVisit = done[done.length - 1];
     if (!lastVisit) continue;
     const days = daysBetween(lastVisit, today);
@@ -776,7 +861,9 @@ export function drawerBalance(
 ) {
   const inSalon = (gid: string) => data.groomers.find((g) => g.id === gid)?.salon_id === salonId;
   const visits = (data.appointments ?? [])
-    .filter((a) => a.status === "Dokončeno" && !a.paid_by_card && a.date <= date && inSalon(a.groomer_id))
+    .filter(
+      (a) => a.status === "Dokončeno" && !a.paid_by_card && a.date <= date && inSalon(a.groomer_id),
+    )
     .reduce((s, a) => s + a.price, 0);
   const ops = (data.cashOps ?? [])
     .filter((o) => o.salon_id === salonId && o.date <= date)
@@ -784,7 +871,13 @@ export function drawerBalance(
   return visits + ops;
 }
 
-export async function saveCashClosing(input: { salon_id: string; date: string; expected: number; counted: number; note: string }) {
+export async function saveCashClosing(input: {
+  salon_id: string;
+  date: string;
+  expected: number;
+  counted: number;
+  note: string;
+}) {
   const { error } = await supabase
     .from("cash_closings")
     .upsert({ ...input, note: input.note || null }, { onConflict: "salon_id,date" });

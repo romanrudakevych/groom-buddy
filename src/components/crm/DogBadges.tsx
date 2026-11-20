@@ -14,7 +14,13 @@ export function KV({ k, v }: { k: string; v: React.ReactNode }) {
   );
 }
 
-export function DogAvatar({ dog, size = 64 }: { dog: Pick<Dog, "name" | "photo_url">; size?: number }) {
+export function DogAvatar({
+  dog,
+  size = 64,
+}: {
+  dog: Pick<Dog, "name" | "photo_url">;
+  size?: number;
+}) {
   return dog.photo_url ? (
     <img
       src={dog.photo_url}
@@ -59,7 +65,15 @@ export function OpenOriginalButton({ path, label }: { path: string; label: strin
   );
 }
 
-export function DogBadges({ dog, full = false, linkGroomer = false }: { dog: Dog; full?: boolean; linkGroomer?: boolean }) {
+export function DogBadges({
+  dog,
+  full = false,
+  linkGroomer = false,
+}: {
+  dog: Dog;
+  full?: boolean;
+  linkGroomer?: boolean;
+}) {
   const { t, tr } = useI18n();
   const { data } = useCrm();
   const g = data.groomers.find((x) => x.id === dog.pinned_groomer_id);
@@ -123,10 +137,17 @@ export function DogPhotoCard({ dog }: { dog: Dog }) {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-muted-foreground">{t("dogPhoto")}</h3>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" disabled={save.isPending} onClick={() => inputRef.current?.click()}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={save.isPending}
+              onClick={() => inputRef.current?.click()}
+            >
               {save.isPending ? t("saving") : t("uploadPhoto")}
             </Button>
-            {dog.photo_path ? <OpenOriginalButton path={dog.photo_path} label={t("openOriginal")} /> : null}
+            {dog.photo_path ? (
+              <OpenOriginalButton path={dog.photo_path} label={t("openOriginal")} />
+            ) : null}
           </div>
         </div>
         {signedUrl ? (

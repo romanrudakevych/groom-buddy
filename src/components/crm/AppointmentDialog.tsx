@@ -85,7 +85,6 @@ export function AppointmentDialog({
   const [dogOpen, setDogOpen] = useState(false);
   const [newDogName, setNewDogName] = useState("");
 
-
   useEffect(() => {
     if (!open) return;
     if (appointment) {
@@ -130,7 +129,10 @@ export function AppointmentDialog({
 
   const isNewVisit = !appointment;
   const prevDur = form.dog_id
-    ? previousDuration(data.appointments, form.dog_id, { duration: duration || 120, serviceIds: [] })
+    ? previousDuration(data.appointments, form.dog_id, {
+        duration: duration || 120,
+        serviceIds: [],
+      })
     : null;
   const autoDuration = prevDur?.fromDate ? prevDur.duration : duration || 120;
   const slotDuration = durOverride ?? autoDuration;
@@ -175,277 +177,47 @@ export function AppointmentDialog({
           <div className="space-y-3">
             <div className="rounded border bg-muted/40 p-2 text-sm">🔒 {t("visitLocked")}</div>
             <div className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-              <div><span className="text-muted-foreground">{t("dog")}: </span>{selDog?.name ?? "—"}</div>
-              <div><span className="text-muted-foreground">{t("groomer")}: </span>{data.groomers.find((g) => g.id === appointment.groomer_id)?.name ?? "—"}</div>
-              <div><span className="text-muted-foreground">{t("date")}: </span>{formatDate(appointment.date)} {appointment.time}</div>
-              <div><span className="text-muted-foreground">{t("status")}: </span>{tr(appointment.status)}</div>
-              <div className="sm:col-span-2"><span className="text-muted-foreground">{t("services")}: </span>{chosen.map((x) => tr(x.name)).join(", ") || "—"}</div>
-              <div><span className="text-muted-foreground">{t("priceAuto")}: </span>{czk(appointment.price)}{appointment.paid_by_card ? ` · ${t("paidByCard")}` : ""}</div>
-              <div><span className="text-muted-foreground">{t("actualDurationMin")}: </span>{appointment.actual_duration ?? "—"}</div>
-              <div><span className="text-muted-foreground">{t("behaviorDuringVisit")}: </span>{appointment.behavior_during_visit ? tr(appointment.behavior_during_visit) : "—"}</div>
+              <div>
+                <span className="text-muted-foreground">{t("dog")}: </span>
+                {selDog?.name ?? "—"}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("groomer")}: </span>
+                {data.groomers.find((g) => g.id === appointment.groomer_id)?.name ?? "—"}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("date")}: </span>
+                {formatDate(appointment.date)} {appointment.time}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("status")}: </span>
+                {tr(appointment.status)}
+              </div>
+              <div className="sm:col-span-2">
+                <span className="text-muted-foreground">{t("services")}: </span>
+                {chosen.map((x) => tr(x.name)).join(", ") || "—"}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("priceAuto")}: </span>
+                {czk(appointment.price)}
+                {appointment.paid_by_card ? ` · ${t("paidByCard")}` : ""}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("actualDurationMin")}: </span>
+                {appointment.actual_duration ?? "—"}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("behaviorDuringVisit")}: </span>
+                {appointment.behavior_during_visit ? tr(appointment.behavior_during_visit) : "—"}
+              </div>
             </div>
             <Field label={t("haircutNotes")}>
-              <Textarea value={form.haircut_notes ?? ""} placeholder={t("haircutNotesHint")}
-                onChange={(e) => setForm({ ...form, haircut_notes: e.target.value })} />
-            </Field>
-            <Field label={t("notes")}>
-              <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-            </Field>
-          </div>
-        ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Field label={t("dog")} required>
-            <SearchPick
-              value={form.dog_id}
-              onChange={(v) => {
-                const d = data.dogs.find((x) => x.id === v);
-                setForm((f) => ({
-                  ...f,
-                  dog_id: v,
-                  groomer_id: !f.id && d?.pinned_groomer_id ? d.pinned_groomer_id : f.groomer_id,
-                }));
-              }}
-              options={data.dogs.map((d) => ({
-                value: d.id,
-                label: `${d.name}${d.breed ? ` (${d.breed})` : ""}`,
-              }))}
-              placeholder={t("pickDog")}
-              searchPlaceholder={t("searchDog")}
-              emptyText={t("noDogFound")}
-              createLabel={t("addNewDog")}
-              onCreate={(q) => {
-                setNewDogName(q);
-                setDogOpen(true);
-              }}
-            />
-          </Field>
-
-          {selDog && (selDog.grooming_instructions || selDog.preferred_additional_services.length || selDog.pinned_groomer_id) ? (
-            <div className="space-y-1 rounded border bg-muted/40 p-2 text-sm sm:col-span-2">
-              {selDog.pinned_groomer_id ? (
-                <div>
-                  <span className="text-muted-foreground">{t("pinnedGroomer")}: </span>
-                  {data.groomers.find((g) => g.id === selDog.pinned_groomer_id)?.name}
-                </div>
-              ) : null}
-              {selDog.grooming_instructions ? (
-                <div className="whitespace-pre-wrap">
-                  <span className="text-muted-foreground">✂️ {t("groomingInstructions")}: </span>
-                  {selDog.grooming_instructions}
-                </div>
-              ) : null}
-              {selDog.preferred_additional_services.length ? (
-                <div>
-                  <span className="text-muted-foreground">{t("additionalServices")}: </span>
-                  {selDog.preferred_additional_services
-                    .map((id) => data.services.find((s) => s.id === id)?.name)
-                    .filter(Boolean)
-                    .map((n) => tr(n as string))
-                    .join(", ")}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          <Field label={t("groomerDeterminesSalon")} required>
-            <Pick
-              value={form.groomer_id}
-              onChange={(v) => setForm({ ...form, groomer_id: v })}
-              options={data.groomers.map((g) => ({
-                value: g.id,
-                label: `${g.name} – ${salonName(g.salon_id)}`,
-              }))}
-              placeholder={t("pickGroomer")}
-            />
-          </Field>
-          {isNewVisit ? (
-            <div className="space-y-2 sm:col-span-2">
-              <div className="text-sm">
-                <span className="text-muted-foreground">{t("duration")}: </span>
-                <span className="font-medium">{slotDuration} {t("min")}</span>
-                {prevDur?.fromDate ? (
-                  <span className="text-muted-foreground"> · {t("asLastTime")} {formatDate(prevDur.fromDate)}</span>
-                ) : null}
-              </div>
-              {form.groomer_id ? (
-                <SlotPicker
-                  data={data}
-                  groomerId={form.groomer_id}
-                  duration={slotDuration}
-                  date={form.date}
-                  time={form.time}
-                  onChange={(date, time) => setForm((f) => ({ ...f, date, time }))}
-                />
-              ) : (
-                <div className="text-sm text-muted-foreground">{t("pickGroomer")}</div>
-              )}
-            </div>
-          ) : !canPlan ? (
-            <div className="text-sm sm:col-span-2">
-              <span className="text-muted-foreground">{t("date")}: </span>
-              <span className="font-medium">{appointment ? `${formatDate(appointment.date)} ${appointment.time}` : ""}</span>
-            </div>
-          ) : !manualTime ? (
-            <div className="space-y-2 sm:col-span-2">
-              <SlotPicker
-                data={data}
-                groomerId={form.groomer_id}
-                duration={slotDuration}
-                date={form.date}
-                time={form.time}
-                excludeId={appointment?.id}
-                onChange={(date, time) => setForm((f) => ({ ...f, date, time }))}
-              />
-              <button type="button" className="text-xs text-muted-foreground underline" onClick={() => {
-                setManualTime(true);
-                if (appointment && (!form.date || !form.time)) setForm((f) => ({ ...f, date: f.date || appointment.date, time: f.time || appointment.time }));
-              }}>
-                {t("enterManually")}
-              </button>
-            </div>
-          ) : (
-            <>
-              <Field label={t("date")} required>
-                <Input
-                  type="date"
-                  value={form.date}
-                  onChange={(e) => setForm({ ...form, date: e.target.value })}
-                />
-              </Field>
-              <Field label={t("time")} required>
-                <Pick
-                  value={form.time}
-                  onChange={(v) => setForm({ ...form, time: v })}
-                  options={Array.from({ length: 23 }, (_, i) => {
-                    const h = 9 + Math.floor(i / 2);
-                    const m = i % 2 ? "30" : "00";
-                    const v = `${String(h).padStart(2, "0")}:${m}`;
-                    return { value: v, label: v };
-                  })}
-                />
-              </Field>
-              <div className="sm:col-span-2">
-                <Button type="button" size="sm" variant="outline" disabled={!form.groomer_id} onClick={() => setManualTime(false)}>
-                  {t("pickFreeSlot")}
-                </Button>
-              </div>
-            </>
-          )}
-          <div className="sm:col-span-2">
-            <Field label={t("services")} required>
-              <CheckList
-                items={data.services.map((s) => ({
-                  id: s.id,
-                  label: `${tr(s.name)} – ${s.duration_minutes} ${t("minuteShort")}, ${czk(servicePriceForDog(s, selDogForPrice))}`,
-                }))}
-                selected={form.serviceIds}
-                onToggle={(id) =>
-                  setForm((f) => ({
-                    ...f,
-                    serviceIds: f.serviceIds.includes(id)
-                      ? f.serviceIds.filter((x) => x !== id)
-                      : [...f.serviceIds, id],
-                  }))
-                }
+              <Textarea
+                value={form.haircut_notes ?? ""}
+                placeholder={t("haircutNotesHint")}
+                onChange={(e) => setForm({ ...form, haircut_notes: e.target.value })}
               />
             </Field>
-          </div>
-          <Field label={t("plannedDurationAuto")}>
-            <Input
-              type="number"
-              min={15}
-              step={15}
-              value={slotDuration}
-              onChange={(e) => setDurOverride(Number(e.target.value) || null)}
-            />
-            {durOverride != null && durOverride !== autoDuration && (
-              <button
-                type="button"
-                className="mt-1 text-xs text-muted-foreground underline"
-                onClick={() => setDurOverride(null)}
-              >
-                {autoDuration} {t("minuteShort")} ↺
-              </button>
-            )}
-          </Field>
-          <Field label={t("priceAuto")}>
-            <Input
-              type="number"
-              min={0}
-              value={price}
-              onChange={(e) => {
-                setPriceTouched(true);
-                setForm((f) => ({ ...f, price: Number(e.target.value) || 0 }));
-              }}
-            />
-            {price !== listPrice && (
-              <button
-                type="button"
-                className="mt-1 text-xs text-muted-foreground underline"
-                onClick={() => setPriceTouched(false)}
-              >
-                {czk(listPrice)} ↺
-              </button>
-            )}
-          </Field>
-          <Field label={t("status")} required>
-            <Pick
-              value={form.status}
-              onChange={(v) =>
-                setForm({
-                  ...form,
-                  status: v,
-                  paid_by_card: v === "Dokončeno" ? form.paid_by_card : false,
-                })
-              }
-              options={opts(STATUSES, tr)}
-            />
-          </Field>
-          {completed ? (
-            <label className="flex items-center gap-2 self-end pb-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.paid_by_card}
-                onChange={(e) => setForm({ ...form, paid_by_card: e.target.checked })}
-              />
-              {t("paidByCard")}
-            </label>
-          ) : null}
-          {completed ? (
-            <>
-              <Field label={t("actualDurationMin")} required>
-                <Input
-                  type="number"
-                  min={5}
-                  value={form.actual_duration ?? ""}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      actual_duration: e.target.value === "" ? null : Number(e.target.value),
-                    })
-                  }
-                />
-              </Field>
-              <Field label={t("behaviorDuringVisit")} required>
-                <Pick
-                  value={form.behavior_during_visit ?? ""}
-                  onChange={(v) => setForm({ ...form, behavior_during_visit: v || null })}
-                  options={opts(BEHAVIORS, tr)}
-                  placeholder={t("pickValue")}
-                />
-              </Field>
-              <div className="sm:col-span-2">
-                <Field label={t("haircutNotes")}>
-                  <Textarea
-                    value={form.haircut_notes ?? ""}
-                    placeholder={t("haircutNotesHint")}
-                    onChange={(e) => setForm({ ...form, haircut_notes: e.target.value })}
-                  />
-                </Field>
-              </div>
-            </>
-          ) : null}
-          <div className="sm:col-span-2">
             <Field label={t("notes")}>
               <Textarea
                 value={form.notes}
@@ -453,7 +225,293 @@ export function AppointmentDialog({
               />
             </Field>
           </div>
-        </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label={t("dog")} required>
+              <SearchPick
+                value={form.dog_id}
+                onChange={(v) => {
+                  const d = data.dogs.find((x) => x.id === v);
+                  setForm((f) => ({
+                    ...f,
+                    dog_id: v,
+                    groomer_id: !f.id && d?.pinned_groomer_id ? d.pinned_groomer_id : f.groomer_id,
+                  }));
+                }}
+                options={data.dogs.map((d) => ({
+                  value: d.id,
+                  label: `${d.name}${d.breed ? ` (${d.breed})` : ""}`,
+                }))}
+                placeholder={t("pickDog")}
+                searchPlaceholder={t("searchDog")}
+                emptyText={t("noDogFound")}
+                createLabel={t("addNewDog")}
+                onCreate={(q) => {
+                  setNewDogName(q);
+                  setDogOpen(true);
+                }}
+              />
+            </Field>
+
+            {selDog &&
+            (selDog.grooming_instructions ||
+              selDog.preferred_additional_services.length ||
+              selDog.pinned_groomer_id) ? (
+              <div className="space-y-1 rounded border bg-muted/40 p-2 text-sm sm:col-span-2">
+                {selDog.pinned_groomer_id ? (
+                  <div>
+                    <span className="text-muted-foreground">{t("pinnedGroomer")}: </span>
+                    {data.groomers.find((g) => g.id === selDog.pinned_groomer_id)?.name}
+                  </div>
+                ) : null}
+                {selDog.grooming_instructions ? (
+                  <div className="whitespace-pre-wrap">
+                    <span className="text-muted-foreground">✂️ {t("groomingInstructions")}: </span>
+                    {selDog.grooming_instructions}
+                  </div>
+                ) : null}
+                {selDog.preferred_additional_services.length ? (
+                  <div>
+                    <span className="text-muted-foreground">{t("additionalServices")}: </span>
+                    {selDog.preferred_additional_services
+                      .map((id) => data.services.find((s) => s.id === id)?.name)
+                      .filter(Boolean)
+                      .map((n) => tr(n as string))
+                      .join(", ")}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            <Field label={t("groomerDeterminesSalon")} required>
+              <Pick
+                value={form.groomer_id}
+                onChange={(v) => setForm({ ...form, groomer_id: v })}
+                options={data.groomers.map((g) => ({
+                  value: g.id,
+                  label: `${g.name} – ${salonName(g.salon_id)}`,
+                }))}
+                placeholder={t("pickGroomer")}
+              />
+            </Field>
+            {isNewVisit ? (
+              <div className="space-y-2 sm:col-span-2">
+                <div className="text-sm">
+                  <span className="text-muted-foreground">{t("duration")}: </span>
+                  <span className="font-medium">
+                    {slotDuration} {t("min")}
+                  </span>
+                  {prevDur?.fromDate ? (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      · {t("asLastTime")} {formatDate(prevDur.fromDate)}
+                    </span>
+                  ) : null}
+                </div>
+                {form.groomer_id ? (
+                  <SlotPicker
+                    data={data}
+                    groomerId={form.groomer_id}
+                    duration={slotDuration}
+                    date={form.date}
+                    time={form.time}
+                    onChange={(date, time) => setForm((f) => ({ ...f, date, time }))}
+                  />
+                ) : (
+                  <div className="text-sm text-muted-foreground">{t("pickGroomer")}</div>
+                )}
+              </div>
+            ) : !canPlan ? (
+              <div className="text-sm sm:col-span-2">
+                <span className="text-muted-foreground">{t("date")}: </span>
+                <span className="font-medium">
+                  {appointment ? `${formatDate(appointment.date)} ${appointment.time}` : ""}
+                </span>
+              </div>
+            ) : !manualTime ? (
+              <div className="space-y-2 sm:col-span-2">
+                <SlotPicker
+                  data={data}
+                  groomerId={form.groomer_id}
+                  duration={slotDuration}
+                  date={form.date}
+                  time={form.time}
+                  excludeId={appointment?.id}
+                  onChange={(date, time) => setForm((f) => ({ ...f, date, time }))}
+                />
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground underline"
+                  onClick={() => {
+                    setManualTime(true);
+                    if (appointment && (!form.date || !form.time))
+                      setForm((f) => ({
+                        ...f,
+                        date: f.date || appointment.date,
+                        time: f.time || appointment.time,
+                      }));
+                  }}
+                >
+                  {t("enterManually")}
+                </button>
+              </div>
+            ) : (
+              <>
+                <Field label={t("date")} required>
+                  <Input
+                    type="date"
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  />
+                </Field>
+                <Field label={t("time")} required>
+                  <Pick
+                    value={form.time}
+                    onChange={(v) => setForm({ ...form, time: v })}
+                    options={Array.from({ length: 23 }, (_, i) => {
+                      const h = 9 + Math.floor(i / 2);
+                      const m = i % 2 ? "30" : "00";
+                      const v = `${String(h).padStart(2, "0")}:${m}`;
+                      return { value: v, label: v };
+                    })}
+                  />
+                </Field>
+                <div className="sm:col-span-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={!form.groomer_id}
+                    onClick={() => setManualTime(false)}
+                  >
+                    {t("pickFreeSlot")}
+                  </Button>
+                </div>
+              </>
+            )}
+            <div className="sm:col-span-2">
+              <Field label={t("services")} required>
+                <CheckList
+                  items={data.services.map((s) => ({
+                    id: s.id,
+                    label: `${tr(s.name)} – ${s.duration_minutes} ${t("minuteShort")}, ${czk(servicePriceForDog(s, selDogForPrice))}`,
+                  }))}
+                  selected={form.serviceIds}
+                  onToggle={(id) =>
+                    setForm((f) => ({
+                      ...f,
+                      serviceIds: f.serviceIds.includes(id)
+                        ? f.serviceIds.filter((x) => x !== id)
+                        : [...f.serviceIds, id],
+                    }))
+                  }
+                />
+              </Field>
+            </div>
+            <Field label={t("plannedDurationAuto")}>
+              <Input
+                type="number"
+                min={15}
+                step={15}
+                value={slotDuration}
+                onChange={(e) => setDurOverride(Number(e.target.value) || null)}
+              />
+              {durOverride != null && durOverride !== autoDuration && (
+                <button
+                  type="button"
+                  className="mt-1 text-xs text-muted-foreground underline"
+                  onClick={() => setDurOverride(null)}
+                >
+                  {autoDuration} {t("minuteShort")} ↺
+                </button>
+              )}
+            </Field>
+            <Field label={t("priceAuto")}>
+              <Input
+                type="number"
+                min={0}
+                value={price}
+                onChange={(e) => {
+                  setPriceTouched(true);
+                  setForm((f) => ({ ...f, price: Number(e.target.value) || 0 }));
+                }}
+              />
+              {price !== listPrice && (
+                <button
+                  type="button"
+                  className="mt-1 text-xs text-muted-foreground underline"
+                  onClick={() => setPriceTouched(false)}
+                >
+                  {czk(listPrice)} ↺
+                </button>
+              )}
+            </Field>
+            <Field label={t("status")} required>
+              <Pick
+                value={form.status}
+                onChange={(v) =>
+                  setForm({
+                    ...form,
+                    status: v,
+                    paid_by_card: v === "Dokončeno" ? form.paid_by_card : false,
+                  })
+                }
+                options={opts(STATUSES, tr)}
+              />
+            </Field>
+            {completed ? (
+              <label className="flex items-center gap-2 self-end pb-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={form.paid_by_card}
+                  onChange={(e) => setForm({ ...form, paid_by_card: e.target.checked })}
+                />
+                {t("paidByCard")}
+              </label>
+            ) : null}
+            {completed ? (
+              <>
+                <Field label={t("actualDurationMin")} required>
+                  <Input
+                    type="number"
+                    min={5}
+                    value={form.actual_duration ?? ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        actual_duration: e.target.value === "" ? null : Number(e.target.value),
+                      })
+                    }
+                  />
+                </Field>
+                <Field label={t("behaviorDuringVisit")} required>
+                  <Pick
+                    value={form.behavior_during_visit ?? ""}
+                    onChange={(v) => setForm({ ...form, behavior_during_visit: v || null })}
+                    options={opts(BEHAVIORS, tr)}
+                    placeholder={t("pickValue")}
+                  />
+                </Field>
+                <div className="sm:col-span-2">
+                  <Field label={t("haircutNotes")}>
+                    <Textarea
+                      value={form.haircut_notes ?? ""}
+                      placeholder={t("haircutNotesHint")}
+                      onChange={(e) => setForm({ ...form, haircut_notes: e.target.value })}
+                    />
+                  </Field>
+                </div>
+              </>
+            ) : null}
+            <div className="sm:col-span-2">
+              <Field label={t("notes")}>
+                <Textarea
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                />
+              </Field>
+            </div>
+          </div>
         )}
 
         <DialogFooter className="gap-2 sm:justify-between sm:space-x-0">
@@ -523,6 +581,5 @@ export function AppointmentDialog({
         }
       />
     </Dialog>
-
   );
 }

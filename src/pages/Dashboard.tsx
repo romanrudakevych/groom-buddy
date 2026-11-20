@@ -26,7 +26,6 @@ import {
 } from "@/lib/crm";
 import { translatedServiceNames, useI18n } from "@/lib/i18n";
 
-
 const ACTIVE = ["Naplánováno", "Potvrzeno", "Dokončeno"];
 
 export function Dashboard() {
@@ -161,23 +160,34 @@ function TodayRow({ a, data, onOpen }: { a: Appointment; data: CrmData; onOpen: 
         {dog?.photo_url ? (
           <img src={dog.photo_url} alt={dog.name} className="h-14 w-14 rounded-full object-cover" />
         ) : (
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-xl">📷</span>
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-xl">
+            📷
+          </span>
         )}
       </button>
-      <button type="button" onClick={onOpen} title={t("tapForDetails")} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-      <span className="min-w-0 flex-1">
-        <span className="block font-medium">
-          {dog?.name ?? "—"}
-          {dog?.breed ? <span className="font-normal text-muted-foreground"> · {dog.breed}</span> : null}
+      <button
+        type="button"
+        onClick={onOpen}
+        title={t("tapForDetails")}
+        className="flex min-w-0 flex-1 items-center gap-3 text-left"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block font-medium">
+            {dog?.name ?? "—"}
+            {dog?.breed ? (
+              <span className="font-normal text-muted-foreground"> · {dog.breed}</span>
+            ) : null}
+          </span>
+          <span className="block truncate text-xs text-muted-foreground">
+            {groomer?.name ?? "—"} · {translatedServiceNames(data, a.serviceIds, tr)} ·{" "}
+            {a.planned_duration} {t("minuteShort")}
+          </span>
         </span>
-        <span className="block truncate text-xs text-muted-foreground">
-          {groomer?.name ?? "—"} · {translatedServiceNames(data, a.serviceIds, tr)} · {a.planned_duration}{" "}
-          {t("minuteShort")}
-        </span>
-      </span>
-      <StatusTag status={a.status} />
+        <StatusTag status={a.status} />
       </button>
-      {dog && cardOpen ? <GroomerCardDialog dog={dog} data={data} onClose={() => setCardOpen(false)} /> : null}
+      {dog && cardOpen ? (
+        <GroomerCardDialog dog={dog} data={data} onClose={() => setCardOpen(false)} />
+      ) : null}
     </div>
   );
 }
@@ -226,7 +236,11 @@ function TomorrowRow({ a, data, onOpen }: { a: Appointment; data: CrmData; onOpe
       {digits.length >= 5 ? (
         <div className="flex gap-1">
           <Button asChild size="sm" variant="whatsapp" aria-label={t("whatsapp")}>
-            <a href={`https://wa.me/${digits}?text=${msg}`} target="_blank" rel="noopener noreferrer">
+            <a
+              href={`https://wa.me/${digits}?text=${msg}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <MessageCircle />
             </a>
           </Button>
@@ -285,7 +299,9 @@ function CashBlock({
             {t("cashConfirmed")}
           </span>
         ) : (
-          <span className="rounded border bg-muted px-2 py-0.5 text-xs">{t("cashNotConfirmed")}</span>
+          <span className="rounded border bg-muted px-2 py-0.5 text-xs">
+            {t("cashNotConfirmed")}
+          </span>
         )}
       </CardHeader>
       <CardContent className="space-y-3">

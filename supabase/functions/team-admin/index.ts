@@ -9,59 +9,86 @@ const cors = {
 };
 
 const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
 
 class HttpError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
     super(message);
   }
 }
 
-const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
+const admin = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  {
+    auth: { persistSession: false, autoRefreshToken: false },
+  },
+);
 
 async function requireOwner(req: Request): Promise<string> {
   const token = req.headers.get("authorization")?.replace(/^Bearer /, "");
   if (!token) throw new HttpError(401, "Unauthorized");
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) throw new HttpError(401, "Unauthorized");
-  const { data: isOwner, error: roleErr } = await admin.rpc("has_role", { _user_id: data.user.id, _role: "owner" });
+  const { data: isOwner, error: roleErr } = await admin.rpc("has_role", {
+    _user_id: data.user.id,
+    _role: "owner",
+  });
   if (roleErr) throw new Error(roleErr.message);
   if (!isOwner) throw new HttpError(403, "Forbidden");
   return data.user.id;
 }
 
 async function deleteUser(callerId: string, input: { userId?: unknown }) {
-  if (!input.userId || typeof input.userId !== "string") throw new HttpError(400, "userId required");
+  if (!input.userId || typeof input.userId !== "string")
+    throw new HttpError(400, "userId required");
   if (input.userId === callerId) throw new HttpError(400, "Cannot delete yourself");
   const { error } = await admin.auth.admin.deleteUser(input.userId);
   if (error) throw new Error(error.message);
   return { ok: true };
 }
 
-async function inviteUser(input: { email?: unknown; fullName?: unknown; role?: unknown; groomerId?: unknown; redirectTo?: unknown }) {
-  const email = String(input.email ?? "").trim().toLowerCase();
+async function inviteUser(input: {
+  email?: unknown;
+  fullName?: unknown;
+  role?: unknown;
+  groomerId?: unknown;
+  redirectTo?: unknown;
+}) {
+  const email = String(input.email ?? "")
+    .trim()
+    .toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new HttpError(400, "Invalid email");
   const role = String(input.role);
   if (!["owner", "admin", "groomer"].includes(role)) throw new HttpError(400, "Invalid role");
-  const fullName = String(input.fullName ?? "").trim().slice(0, 100);
+  const fullName = String(input.fullName ?? "")
+    .trim()
+    .slice(0, 100);
   const groomerId = typeof input.groomerId === "string" && input.groomerId ? input.groomerId : null;
   const { data: inv, error } = await admin.auth.admin.inviteUserByEmail(email, {
     data: { full_name: fullName || email, needs_password: true },
     redirectTo: typeof input.redirectTo === "string" ? input.redirectTo : undefined,
   });
   if (error) throw new Error(error.message);
-  const { error: rErr } = await admin.from("user_roles").upsert(
-    { user_id: inv.user.id, role, groomer_id: role === "groomer" ? groomerId : null },
-    { onConflict: "user_id" },
-  );
+  const { error: rErr } = await admin
+    .from("user_roles")
+    .upsert(
+      { user_id: inv.user.id, role, groomer_id: role === "groomer" ? groomerId : null },
+      { onConflict: "user_id" },
+    );
   if (rErr) throw new Error(rErr.message);
   return { ok: true };
 }
 
 async function accessLink(input: { userId?: unknown; redirectTo?: unknown }) {
-  if (!input.userId || typeof input.userId !== "string") throw new HttpError(400, "userId required");
+  if (!input.userId || typeof input.userId !== "string")
+    throw new HttpError(400, "userId required");
   const { data: u, error: uErr } = await admin.auth.admin.getUserById(input.userId);
   if (uErr || !u.user?.email) throw new HttpError(404, uErr?.message ?? "User not found");
   await admin.auth.admin.updateUserById(input.userId, {

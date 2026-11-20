@@ -20,7 +20,6 @@ import {
 } from "@/lib/crm";
 import { translatedServiceNames, useI18n } from "@/lib/i18n";
 
-
 type View = "den" | "tyden" | "mesic";
 
 const HOURS = Array.from({ length: 11 }, (_, i) => 9 + i);
@@ -38,8 +37,11 @@ export function Calendar() {
   // Future: groomer role will lock this to their own id.
   const [groomerFilter, setGroomerFilter] = useState<string | null>(null);
   const colorOf = (id: string) => groomerColor(data.groomers, id);
-  const visibleSalons = salonTab === "all" ? data.salons : data.salons.filter((s) => s.id === salonTab);
-  const legendGroomers = data.groomers.filter((g) => visibleSalons.some((s) => s.id === g.salon_id));
+  const visibleSalons =
+    salonTab === "all" ? data.salons : data.salons.filter((s) => s.id === salonTab);
+  const legendGroomers = data.groomers.filter((g) =>
+    visibleSalons.some((s) => s.id === g.salon_id),
+  );
   const selectedAppointment = data.appointments.find((a) => a.id === selectedId) ?? null;
 
   const date = fromISO(cursor);
@@ -73,7 +75,9 @@ export function Calendar() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{t("calendar")}</h1>
-        {can("appointments_create") && <Button onClick={() => openAppointment(null, { date: cursor })}>{t("newVisit")}</Button>}
+        {can("appointments_create") && (
+          <Button onClick={() => openAppointment(null, { date: cursor })}>{t("newVisit")}</Button>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -152,7 +156,8 @@ export function Calendar() {
                   appts={appts.filter((a) => a.date === cursor)}
                   date={cursor}
                   onNew={(groomerId, time) => {
-                    if (can("appointments_create")) openAppointment(null, { groomer_id: groomerId, date: cursor, time });
+                    if (can("appointments_create"))
+                      openAppointment(null, { groomer_id: groomerId, date: cursor, time });
                   }}
                   onOpen={(a) => setSelectedId(a.id)}
                   colorOf={colorOf}
@@ -230,7 +235,10 @@ function DayView({
         {groomers.map((g) => (
           <div key={g.id} className="min-w-0 flex-1 border-l">
             <div className="flex h-8 items-center justify-center gap-1.5 text-sm font-medium">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colorOf(g.id) }} />
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: colorOf(g.id) }}
+              />
               {g.name}
             </div>
             <div className="relative" style={{ height: HOURS.length * ROW_H }}>

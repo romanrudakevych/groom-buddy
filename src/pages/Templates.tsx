@@ -45,7 +45,6 @@ type Template = {
   body: string;
 };
 
-
 const KEY = ["message_templates"];
 
 export function TemplatesPage() {

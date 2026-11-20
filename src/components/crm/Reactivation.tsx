@@ -12,7 +12,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Pick } from "@/components/crm/Pick";
 import { Field } from "@/components/crm/ui";
 import {
@@ -90,7 +97,11 @@ export function ReactivationList() {
                           {digits ? (
                             <>
                               <Button asChild size="sm" variant="whatsapp">
-                                <a href={`https://wa.me/${digits}`} target="_blank" rel="noopener noreferrer">
+                                <a
+                                  href={`https://wa.me/${digits}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
                                   <MessageCircle />
                                 </a>
                               </Button>
@@ -151,7 +162,13 @@ function ContactDialog({ dog, onClose }: { dog: Dog | null; onClose: () => void 
   const save = () => {
     if (!dog) return;
     mutation.mutate(
-      { dog_id: dog.id, result, reason: reason || null, note: note.trim() || null, remind_on: remind || null },
+      {
+        dog_id: dog.id,
+        result,
+        reason: reason || null,
+        note: note.trim() || null,
+        remind_on: remind || null,
+      },
       {
         onSuccess: () => {
           toast.success(t("contactSaved"));
@@ -172,10 +189,19 @@ function ContactDialog({ dog, onClose }: { dog: Dog | null; onClose: () => void 
         </DialogHeader>
         <div className="space-y-3">
           <Field label={t("contactResult")}>
-            <Pick value={result} onChange={setResult} options={localizedOptions(CONTACT_RESULTS, tr)} />
+            <Pick
+              value={result}
+              onChange={setResult}
+              options={localizedOptions(CONTACT_RESULTS, tr)}
+            />
           </Field>
           <Field label={t("absenceReason")}>
-            <Pick value={reason} onChange={setReason} options={localizedOptions(ABSENCE_REASONS, tr)} placeholder="—" />
+            <Pick
+              value={reason}
+              onChange={setReason}
+              options={localizedOptions(ABSENCE_REASONS, tr)}
+              placeholder="—"
+            />
           </Field>
           <Field label={t("remindOn")}>
             <Input type="date" value={remind} onChange={(e) => setRemind(e.target.value)} />

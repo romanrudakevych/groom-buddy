@@ -69,10 +69,7 @@ export function SearchPick({
                   }}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      o.value === value ? "opacity-100" : "opacity-0",
-                    )}
+                    className={cn("mr-2 h-4 w-4", o.value === value ? "opacity-100" : "opacity-0")}
                   />
                   <span className="truncate">{o.label}</span>
                 </CommandItem>

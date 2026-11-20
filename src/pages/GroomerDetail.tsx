@@ -22,11 +22,18 @@ import {
 } from "@/components/ui/table";
 import { Kpi, SectionTitle, StatusTag, Tag } from "@/components/crm/ui";
 import { useDialogs } from "@/components/crm/DialogProvider";
-import { czk, deleteGroomer, formatDate, groomerRetention, todayISO, useCrm, useCrmMutation } from "@/lib/crm";
+import {
+  czk,
+  deleteGroomer,
+  formatDate,
+  groomerRetention,
+  todayISO,
+  useCrm,
+  useCrmMutation,
+} from "@/lib/crm";
 import { translatedServiceNames, useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { canSeeGroomerFinances } from "@/lib/groomer-finances";
-
 
 export function GroomerDetail() {
   const { groomerId } = useParams() as { groomerId: string };
@@ -40,7 +47,8 @@ export function GroomerDetail() {
   const money = canSeeGroomerFinances(role, myGroomerId, groomerId, can("groomer_finances"));
 
   const groomer = data.groomers.find((g) => g.id === groomerId);
-  if (!groomer || (isGroomer && groomer.id !== myGroomerId)) return <p className="text-sm text-muted-foreground">{t("groomerNotFound")}</p>;
+  if (!groomer || (isGroomer && groomer.id !== myGroomerId))
+    return <p className="text-sm text-muted-foreground">{t("groomerNotFound")}</p>;
 
   const appts = data.appointments.filter((a) => a.groomer_id === groomer.id);
   const done = appts.filter((a) => a.status === "Dokončeno");
@@ -57,53 +65,62 @@ export function GroomerDetail() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <h1 className="text-2xl font-semibold">{groomer.name}</h1>
-        <div className="text-sm text-muted-foreground">{groomer.phone ?? "—"}</div>
-        <div className="mt-2 flex flex-wrap gap-1">
-          <Tag>{data.salons.find((s) => s.id === groomer.salon_id)?.name}</Tag>
+        <div>
+          <h1 className="text-2xl font-semibold">{groomer.name}</h1>
+          <div className="text-sm text-muted-foreground">{groomer.phone ?? "—"}</div>
+          <div className="mt-2 flex flex-wrap gap-1">
+            <Tag>{data.salons.find((s) => s.id === groomer.salon_id)?.name}</Tag>
+          </div>
         </div>
-      </div>
-        {!isGroomer && <div className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={() => openGroomer(groomer)}>
-          {t("edit")}
-        </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive">{t("deleteGroomer")}</Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {t("deleteGroomer")}: {groomer.name}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {t("deleteGroomerConfirm")} ({appts.length}).
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() =>
-                  del.mutate(groomer.id, { onSuccess: () => navigate("/groomeri") })
-                }
-              >
-                {t("delete")}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-        </div>}
+        {!isGroomer && (
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => openGroomer(groomer)}>
+              {t("edit")}
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">{t("deleteGroomer")}</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {t("deleteGroomer")}: {groomer.name}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("deleteGroomerConfirm")} ({appts.length}).
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() =>
+                      del.mutate(groomer.id, { onSuccess: () => navigate("/groomeri") })
+                    }
+                  >
+                    {t("delete")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Kpi label={t("completedVisits")} value={done.length} />
-        {money && <><Kpi label={t("totalRevenue")} value={czk(revenue)} />
-        <Kpi
-          label={t("noShowRate")}
-          value={`${appts.length ? Math.round((noShow.length / appts.length) * 100) : 0} %`}
-        />
-        <Kpi label={t("returnRate")} value={`${groomerRetention(data.appointments, groomer.id)} %`} /></>}
+        {money && (
+          <>
+            <Kpi label={t("totalRevenue")} value={czk(revenue)} />
+            <Kpi
+              label={t("noShowRate")}
+              value={`${appts.length ? Math.round((noShow.length / appts.length) * 100) : 0} %`}
+            />
+            <Kpi
+              label={t("returnRate")}
+              value={`${groomerRetention(data.appointments, groomer.id)} %`}
+            />
+          </>
+        )}
       </div>
 
       <div>
@@ -159,14 +176,16 @@ export function GroomerDetail() {
               </TableRow>
             ))}
           </TableBody>
-          {money && <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>{t("revenueFromCompletedVisits")}</TableCell>
-              <TableCell colSpan={2} className="font-medium">
-                {czk(revenue)}
-              </TableCell>
-            </TableRow>
-          </TableFooter>}
+          {money && (
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={3}>{t("revenueFromCompletedVisits")}</TableCell>
+                <TableCell colSpan={2} className="font-medium">
+                  {czk(revenue)}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       </div>
     </div>

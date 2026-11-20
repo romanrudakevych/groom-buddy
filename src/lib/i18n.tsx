@@ -52,8 +52,10 @@ const strings = {
     cashReconfirm: "Обновить подтверждение",
     cashNotConfirmed: "Не подтверждено",
     pickSalonForCash: "Касса ведётся по каждому салону отдельно.",
-    reminderTemplateCs: "Dobrý den, připomínáme zítřejší návštěvu {dog} v {time} v salonu Daisy's pet grooming ({salon}). Potvrďte prosím, zda dorazíte. Děkujeme!",
-    reminderTemplateRu: "Здравствуйте! Напоминаем о записи {dog} завтра в {time} в салон Daisy's pet grooming ({salon}). Подтвердите, пожалуйста, визит. Спасибо!",
+    reminderTemplateCs:
+      "Dobrý den, připomínáme zítřejší návštěvu {dog} v {time} v salonu Daisy's pet grooming ({salon}). Potvrďte prosím, zda dorazíte. Děkujeme!",
+    reminderTemplateRu:
+      "Здравствуйте! Напоминаем о записи {dog} завтра в {time} в салон Daisy's pet grooming ({salon}). Подтвердите, пожалуйста, визит. Спасибо!",
     noVisitsToday: "На сегодня визитов нет.",
     revenueByGroomerMonth: "Выручка по грумерам (за месяц)",
     topServicesMonth: "Топ-5 услуг за месяц",
@@ -271,7 +273,8 @@ const strings = {
     behaviorDuringVisit: "Поведение во время визита",
     pickValue: "— выберите —",
     visitUpdated: "Визит обновлён",
-    visitLocked: "Визит завершён и закрыт для изменений. Можно менять только заметки и описание стрижки.",
+    visitLocked:
+      "Визит завершён и закрыт для изменений. Можно менять только заметки и описание стрижки.",
     deleteVisit: "Удалить запись",
     deleteVisitConfirm: "Удалить эту запись? Действие нельзя отменить.",
     deleteVisitDoneWarning: "Визит завершён. Удаление скорректирует статистику и кассу.",
@@ -299,7 +302,8 @@ const strings = {
     haveAccount: "Уже есть аккаунт? Войти",
     checkEmail: "Проверьте почту и подтвердите email, затем войдите.",
     awaitingAccess: "Ожидание доступа",
-    awaitingAccessText: "Ваш аккаунт создан. Владелец салона должен назначить вам роль в настройках.",
+    awaitingAccessText:
+      "Ваш аккаунт создан. Владелец салона должен назначить вам роль в настройках.",
     noAccess: "У вас нет доступа к этому разделу.",
     roleOwner: "Владелец",
     roleAdmin: "Администратор",
@@ -307,13 +311,15 @@ const strings = {
     roleNone: "Без доступа",
     linkedGroomer: "Карточка грумера",
     teamUsers: "Пользователи и роли",
-    teamUsersHint: "Пригласите сотрудника по email — он получит письмо, придумает пароль и сразу войдёт с выбранной ролью.",
+    teamUsersHint:
+      "Пригласите сотрудника по email — он получит письмо, придумает пароль и сразу войдёт с выбранной ролью.",
     myDogs: "Мои собаки",
     user: "Пользователь",
     role: "Роль",
     deleteUser: "Удалить пользователя",
     setPasswordTitle: "Придумайте пароль для входа",
-    setPasswordWelcome: "Добро пожаловать! Ваш логин — этот email. Придумайте пароль, чтобы входить в CRM.",
+    setPasswordWelcome:
+      "Добро пожаловать! Ваш логин — этот email. Придумайте пароль, чтобы входить в CRM.",
     passwordRepeat: "Повторите пароль",
     passwordMismatch: "Пароли не совпадают",
     saveAndEnter: "Сохранить и войти",
@@ -328,10 +334,12 @@ const strings = {
     inviteSend: "Отправить приглашение",
     inviteSent: "Приглашение отправлено",
     permsTitle: "Права по умолчанию для новых сотрудников",
-    permsHint: "Эти права получает сотрудник при назначении роли. Личные права каждого сотрудника настраиваются кнопкой «Права» в списке выше. Изменения действуют после повторного входа сотрудника.",
+    permsHint:
+      "Эти права получает сотрудник при назначении роли. Личные права каждого сотрудника настраиваются кнопкой «Права» в списке выше. Изменения действуют после повторного входа сотрудника.",
     userPerms: "Права",
     userPermsTitle: "Права доступа",
-    userPermsHint: "Отметьте, что может делать этот сотрудник. Изменения действуют после его повторного входа.",
+    userPermsHint:
+      "Отметьте, что может делать этот сотрудник. Изменения действуют после его повторного входа.",
     permAction: "Действие",
     permGroupCalendar: "Календарь и записи",
     permGroupClients: "Клиенты и собаки",
@@ -448,8 +456,10 @@ const strings = {
     cashReconfirm: "Aktualizovat potvrzení",
     cashNotConfirmed: "Nepotvrzeno",
     pickSalonForCash: "Pokladna se vede pro každý salon zvlášť.",
-    reminderTemplateCs: "Dobrý den, připomínáme zítřejší návštěvu {dog} v {time} v salonu Daisy's pet grooming ({salon}). Potvrďte prosím, zda dorazíte. Děkujeme!",
-    reminderTemplateRu: "Здравствуйте! Напоминаем о записи {dog} завтра в {time} в салон Daisy's pet grooming ({salon}). Подтвердите, пожалуйста, визит. Спасибо!",
+    reminderTemplateCs:
+      "Dobrý den, připomínáme zítřejší návštěvu {dog} v {time} v salonu Daisy's pet grooming ({salon}). Potvrďte prosím, zda dorazíte. Děkujeme!",
+    reminderTemplateRu:
+      "Здравствуйте! Напоминаем о записи {dog} завтра в {time} в салон Daisy's pet grooming ({salon}). Подтвердите, пожалуйста, визит. Спасибо!",
     noVisitsToday: "Dnes nejsou žádné návštěvy.",
     revenueByGroomerMonth: "Obrat podle groomera (tento měsíc)",
     topServicesMonth: "Top 5 služeb tento měsíc",
@@ -703,13 +713,15 @@ const strings = {
     roleNone: "Bez přístupu",
     linkedGroomer: "Karta groomera",
     teamUsers: "Uživatelé a role",
-    teamUsersHint: "Pozvěte zaměstnance e-mailem — dostane e-mail, vytvoří si heslo a přihlásí se se zvolenou rolí.",
+    teamUsersHint:
+      "Pozvěte zaměstnance e-mailem — dostane e-mail, vytvoří si heslo a přihlásí se se zvolenou rolí.",
     myDogs: "Moji psi",
     user: "Uživatel",
     role: "Role",
     deleteUser: "Smazat uživatele",
     setPasswordTitle: "Vytvořte si heslo pro přihlášení",
-    setPasswordWelcome: "Vítejte! Vaším přihlašovacím jménem je tento e-mail. Vytvořte si heslo pro vstup do CRM.",
+    setPasswordWelcome:
+      "Vítejte! Vaším přihlašovacím jménem je tento e-mail. Vytvořte si heslo pro vstup do CRM.",
     passwordRepeat: "Zopakujte heslo",
     passwordMismatch: "Hesla se neshodují",
     saveAndEnter: "Uložit a vstoupit",
@@ -724,10 +736,12 @@ const strings = {
     inviteSend: "Odeslat pozvánku",
     inviteSent: "Pozvánka odeslána",
     permsTitle: "Výchozí oprávnění pro nové zaměstnance",
-    permsHint: "Tato práva zaměstnanec dostane při přidělení role. Osobní práva nastavíte tlačítkem „Práva“ v seznamu výše. Změny platí po novém přihlášení zaměstnance.",
+    permsHint:
+      "Tato práva zaměstnanec dostane při přidělení role. Osobní práva nastavíte tlačítkem „Práva“ v seznamu výše. Změny platí po novém přihlášení zaměstnance.",
     userPerms: "Práva",
     userPermsTitle: "Přístupová práva",
-    userPermsHint: "Označte, co může tento zaměstnanec dělat. Změny platí po jeho novém přihlášení.",
+    userPermsHint:
+      "Označte, co může tento zaměstnanec dělat. Změny platí po jeho novém přihlášení.",
     permAction: "Akce",
     permGroupCalendar: "Kalendář a rezervace",
     permGroupClients: "Klienti a psi",
@@ -858,19 +872,37 @@ const valueTranslations: Record<string, Record<UiLanguage, string>> = {
   "Vyčesávání srsti": { ru: "Вычёсывание шерсти", cs: "Vyčesávání srsti" },
   "Odstranění klíštěte": { ru: "Удаление клеща (шт.)", cs: "Odstranění klíštěte (ks)" },
   "Maska proti línání": { ru: "Маска против линьки", cs: "Maska proti línání" },
-  "Vyživující a hydratační maska": { ru: "Питательная увлажняющая маска", cs: "Vyživující a hydratační maska" },
-  "Hydratační a zklidňující maska": { ru: "Увлажняющая успокаивающая маска", cs: "Hydratační a zklidňující maska" },
+  "Vyživující a hydratační maska": {
+    ru: "Питательная увлажняющая маска",
+    cs: "Vyživující a hydratační maska",
+  },
+  "Hydratační a zklidňující maska": {
+    ru: "Увлажняющая успокаивающая маска",
+    cs: "Hydratační a zklidňující maska",
+  },
   "Vyčesávání dredů": { ru: "Вычёсывание колтунов (30 мин)", cs: "Vyčesávání dredů (30 min)" },
   "Ošetření proti blechám": { ru: "Блохи", cs: "Blechy u psa" },
-  "Stříhání srsti mezi polštářky": { ru: "Стрижка между подушечками", cs: "Stříhání srsti mezi polštářky" },
+  "Stříhání srsti mezi polštářky": {
+    ru: "Стрижка между подушечками",
+    cs: "Stříhání srsti mezi polštářky",
+  },
   "Vyholení tlapek": { ru: "Выбривание лап", cs: "Vyholení tlapek" },
   Asistence: { ru: "Ассистент (30 мин)", cs: "Asistence (30 min)" },
   Volno: { ru: "Выходной", cs: "Volno" },
   "Celý den": { ru: "Работает", cs: "Pracuje" },
-  "Připomínka zítřejší návštěvy": { ru: "Напоминание о завтрашнем визите", cs: "Připomínka zítřejší návštěvy" },
-  "Pes je připraven k vyzvednutí": { ru: "Собака готова к выдаче", cs: "Pes je připraven k vyzvednutí" },
+  "Připomínka zítřejší návštěvy": {
+    ru: "Напоминание о завтрашнем визите",
+    cs: "Připomínka zítřejší návštěvy",
+  },
+  "Pes je připraven k vyzvednutí": {
+    ru: "Собака готова к выдаче",
+    cs: "Pes je připraven k vyzvednutí",
+  },
   "Potvrzení rezervace": { ru: "Подтверждение записи", cs: "Potvrzení rezervace" },
-  "Následná péče / poděkování": { ru: "Уход после визита / благодарность", cs: "Následná péče / poděkování" },
+  "Následná péče / poděkování": {
+    ru: "Уход после визита / благодарность",
+    cs: "Následná péče / poděkování",
+  },
 };
 
 type I18nContextValue = {
@@ -882,8 +914,11 @@ type I18nContextValue = {
 };
 
 const I18nContext: React.Context<I18nContextValue | null> =
-  ((globalThis as Record<string, unknown>)["__crmI18nContext"] as React.Context<I18nContextValue | null>) ??
-  ((globalThis as Record<string, unknown>)["__crmI18nContext"] = createContext<I18nContextValue | null>(null));
+  ((globalThis as Record<string, unknown>)[
+    "__crmI18nContext"
+  ] as React.Context<I18nContextValue | null>) ??
+  ((globalThis as Record<string, unknown>)["__crmI18nContext"] =
+    createContext<I18nContextValue | null>(null));
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<UiLanguage>("cs");

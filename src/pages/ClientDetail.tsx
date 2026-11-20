@@ -18,7 +18,6 @@ import { clientDogs, czk, formatDate, todayISO, useCrm, useCrmMutation } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { translatedServiceNames, useI18n } from "@/lib/i18n";
 
-
 export function ClientDetail() {
   const { clientId } = useParams() as { clientId: string };
   const { data } = useCrm();
@@ -48,8 +47,6 @@ export function ClientDetail() {
     .sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
 
   const salon = data.salons.find((s) => s.id === client.preferred_salon_id)?.name;
-
-
 
   const Row = ({ a }: { a: (typeof appts)[number] }) => (
     <TableRow className="cursor-pointer" onClick={() => openAppointment(a)}>
