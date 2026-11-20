@@ -5,7 +5,7 @@ export type UiLanguage = "ru" | "cs";
 
 const STORAGE_KEY = "groom-crm-ui-language";
 
-const strings = {
+export const strings = {
   ru: {
     appName: "Daisy's pet grooming",
     appSubtitle: "Sokolovská · Tuklatská",
@@ -816,7 +816,7 @@ const strings = {
 
 export type TranslationKey = keyof typeof strings.ru;
 
-const valueTranslations: Record<string, Record<UiLanguage, string>> = {
+export const valueTranslations: Record<string, Record<UiLanguage, string>> = {
   ENG: { ru: "Английский", cs: "ENG" },
   "Objednal se": { ru: "Записался", cs: "Objednal se" },
   Kontaktován: { ru: "Связались", cs: "Kontaktován" },

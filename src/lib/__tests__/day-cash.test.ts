@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  cashOpSign,
   dayCash,
   drawerBalance,
   isUpcomingStatus,
@@ -72,5 +73,31 @@ describe("day cash", () => {
   it("confirmed visits stay upcoming", () => {
     expect(isUpcomingStatus("Potvrzeno")).toBe(true);
     expect(isUpcomingStatus("Dokončeno")).toBe(false);
+  });
+});
+
+describe("drawer balance", () => {
+  const data = {
+    groomers,
+    appointments: [
+      appt({ price: 1000, date: "2026-10-27" }),
+      appt({ price: 600, date: "2026-10-30" }), // after the day
+      appt({ price: 900, paid_by_card: true }), // card never reaches the drawer
+    ],
+    cashOps: [
+      op({ type: "Vklad", amount: 500, date: "2026-10-27" }),
+      op({ type: "Výdaj", amount: 200 }),
+      op({ type: "Inkaso", amount: 1000, date: "2026-10-30" }), // after the day
+      op({ type: "Vklad", amount: 999, salon_id: "s2" }), // other salon
+    ],
+  };
+  it("adds cash visits and deposits up to the day, minus expenses and collections", () => {
+    expect(drawerBalance(data, "s1", "2026-10-29")).toBe(1000 + 500 - 200);
+    expect(drawerBalance(data, "s1", "2026-10-30")).toBe(1000 + 600 + 500 - 200 - 1000);
+  });
+  it("signs cash operations", () => {
+    expect(cashOpSign("Vklad")).toBe(1);
+    expect(cashOpSign("Výdaj")).toBe(-1);
+    expect(cashOpSign("Inkaso")).toBe(-1);
   });
 });
