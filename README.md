@@ -1,5 +1,6 @@
 # Groom Buddy CRM
 
+[![CI](https://github.com/romanrudakevych/groom-buddy/actions/workflows/ci.yml/badge.svg)](https://github.com/romanrudakevych/groom-buddy/actions/workflows/ci.yml)
 [![Deploy to GitHub Pages](https://github.com/romanrudakevych/groom-buddy/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/romanrudakevych/groom-buddy/actions/workflows/deploy-pages.yml)
 
 A CRM for a dog-grooming business with two salons. It covers clients and their
@@ -128,19 +129,22 @@ VITE_LOGIN_PASSWORD=...
 
 ### Scripts
 
-| Script                     | Description                                                      |
-| -------------------------- | ---------------------------------------------------------------- |
-| `npm run dev`              | Vite dev server with HMR                                         |
-| `npm run build`            | Production build to `dist/`                                      |
-| `npm run preview`          | Serve the production build locally                               |
-| `npm run lint`             | ESLint (Prettier runs as a rule)                                 |
-| `npm run format`           | Prettier `--write`                                               |
-| `npx tsc --noEmit`         | Type-check (no script for it)                                    |
-| `npx vitest run`           | Run the test suite                                               |
-| `npm run db:new -- <name>` | Create `supabase/migrations/<timestamp>_<name>.sql`              |
-| `npm run db:push`          | Apply pending migrations to the linked Supabase project          |
-| `npm run db:seed`          | Fill the linked project with demo data (`-- --clean` removes it) |
-| `npm run functions:deploy` | Deploy the `team-admin` Edge Function                            |
+| Script                     | Description                                                       |
+| -------------------------- | ----------------------------------------------------------------- |
+| `npm run dev`              | Vite dev server with HMR                                          |
+| `npm run build`            | Production build to `dist/`                                       |
+| `npm run preview`          | Serve the production build locally                                |
+| `npm run lint`             | ESLint (Prettier runs as a rule)                                  |
+| `npm run format`           | Prettier `--write`                                                |
+| `npm run typecheck`        | Type-check (`tsc --noEmit`)                                       |
+| `npm test`                 | Unit and component tests (`vitest run`)                           |
+| `npm run test:db`          | RLS / trigger tests against local Supabase (needs Docker)         |
+| `npm run test:e2e`         | Playwright end-to-end tests against local Supabase (needs Docker) |
+| `npm run db:start`         | Start the local Supabase stack with this repo's migrations        |
+| `npm run db:new -- <name>` | Create `supabase/migrations/<timestamp>_<name>.sql`               |
+| `npm run db:push`          | Apply pending migrations to the linked Supabase project           |
+| `npm run db:seed`          | Fill the linked project with demo data (`-- --clean` removes it)  |
+| `npm run functions:deploy` | Deploy the `team-admin` Edge Function                             |
 
 ## Supabase
 
@@ -180,7 +184,17 @@ written by the triggers during seeding are kept.
 
 The app is hosted at **https://romanrudakevych.github.io/groom-buddy/** and is
 deployed by `.github/workflows/deploy-pages.yml` on every push to `master` (or
-manually from the Actions tab).
+manually from the Actions tab). The deploy runs CI first and stops if it fails.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every pull request and on pushes to other
+branches. The `check` job runs lint (including Prettier formatting), type-check,
+unit and component tests and a production build. The `e2e` job then starts a
+local Supabase stack from the migrations and runs the database (RLS) tests and
+the Playwright suite; on failure the Playwright report is uploaded as an artifact. For `master`, the deploy workflow calls the same workflow
+before building, so CI does not run twice. To block merging red PRs, require
+the `CI / check` status check in a branch protection rule for `master`.
 
 One-time setup:
 
@@ -248,20 +262,50 @@ real access control** (`has_role`, `is_staff`, `my_groomer_id`,
 
 ## Tests
 
+There are four levels, from fast and isolated to slow and real:
+
+| Level     | Where                                                 | Runs against                         | Command            |
+| --------- | ----------------------------------------------------- | ------------------------------------ | ------------------ |
+| Unit      | `src/lib/__tests__/`                                  | pure functions                       | `npm test`         |
+| Component | `src/components/crm/__tests__/`, `src/app/__tests__/` | jsdom + mocked Supabase              | `npm test`         |
+| Database  | `tests/db/`                                           | local Supabase (RLS, triggers)       | `npm run test:db`  |
+| E2E       | `e2e/`                                                | local Supabase + the app in Chromium | `npm run test:e2e` |
+
 ```bash
-npx vitest run                                   # all
-npx vitest run src/lib/__tests__/booking.test.ts # one file
+npm test                                          # unit + component
+npx vitest run src/lib/__tests__/booking.test.ts  # one file
+npx vitest run -t "locks only completed"          # one test by name
+
+npm run db:start                                  # once; needs Docker
+npm run test:db
+npx playwright install chromium                   # once
+npm run test:e2e
+npx playwright test e2e/booking.spec.ts --headed  # one spec, visible browser
 ```
 
-26 tests in `src/lib/__tests__/` cover the pure domain logic: booking slots and
-durations, size-based pricing, daily cash and drawer balance, inactive-dog
-detection for reactivation, admin access restrictions, groomer-finance
-visibility and assigned-dog counts.
+- **Unit** tests cover the domain logic: booking slots and durations, size-based
+  pricing, dates, retention and payment split, daily cash and drawer balance,
+  visit locking, groomer colours, inactive-dog detection, page access by role,
+  and that the Russian and Czech dictionaries match and translate every stored value.
+  Shared fixtures are in `src/lib/__tests__/fixtures.ts`.
+- **Component** tests render real components with React Testing Library: sign-in,
+  the slot picker, the locked completed-visit dialog, and navigation and page
+  blocking per role. Files opt into jsdom with `// @vitest-environment jsdom`, and
+  `src/test/supabase-mock.ts` replaces the Supabase client.
+- **Database** tests sign in as owner, admin and groomer and check the RLS policies
+  and the completed-visit lock triggers. The policies are what actually protect the data.
+- **E2E** tests sign in, check access per role, create a client with a dog and book
+  a visit through the UI.
+
+Both database and E2E tests seed their own users (`owner@e2e.test`,
+`admin@e2e.test`, `groomer@e2e.test`) and rows (`tests/support/seed.ts`). The seed
+is safe to re-run; `npx supabase db reset` gives a clean database.
 
 ## Project structure
 
 ```
-.github/workflows/deploy-pages.yml  # build + deploy to GitHub Pages on push to master
+.github/workflows/ci.yml            # lint, type-check, tests, build on PRs and branches
+.github/workflows/deploy-pages.yml  # CI, then build + deploy to GitHub Pages on push to master
 public/                             # favicon, robots.txt, _redirects
 scripts/seed-demo.mjs               # demo data seeder (npm run db:seed)
 supabase/
@@ -289,8 +333,12 @@ src/
 │   ├── i18n.tsx                    # Czech / Russian dictionaries and value translations
 │   ├── team.api.ts                 # calls to the team-admin Edge Function
 │   ├── app-url.ts                  # base URL for auth email links
-│   └── __tests__/                  # Vitest suites
+│   └── __tests__/                  # unit tests and shared fixtures
+├── test/                           # Vitest setup and the Supabase mock
 └── integrations/supabase/          # client and generated database types
+tests/db/                           # RLS and trigger tests (local Supabase)
+tests/support/                      # local Supabase connection and test seed
+e2e/                                # Playwright specs
 ```
 
 ### Routes

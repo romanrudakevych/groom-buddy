@@ -8,13 +8,21 @@ const appt = (date: string, status: string) =>
 
 describe("inactiveDogs", () => {
   it("flags a dog absent longer than 60 days", () => {
-    const r = inactiveDogs({ dogs: [dog], appointments: [appt("2026-08-01", "Dokončeno")], contacts: [] }, 60, "2026-10-11");
+    const r = inactiveDogs(
+      { dogs: [dog], appointments: [appt("2026-08-01", "Dokončeno")], contacts: [] },
+      60,
+      "2026-10-11",
+    );
     expect(r).toHaveLength(1);
     expect(r[0]!.days).toBe(71);
   });
   it("does not flag a dog with an upcoming visit", () => {
     const r = inactiveDogs(
-      { dogs: [dog], appointments: [appt("2026-08-01", "Dokončeno"), appt("2026-10-20", "Naplánováno")], contacts: [] },
+      {
+        dogs: [dog],
+        appointments: [appt("2026-08-01", "Dokončeno"), appt("2026-10-20", "Naplánováno")],
+        contacts: [],
+      },
       60,
       "2026-10-11",
     );
@@ -25,7 +33,18 @@ describe("inactiveDogs", () => {
       {
         dogs: [dog],
         appointments: [appt("2026-08-01", "Dokončeno")],
-        contacts: [{ id: "c", dog_id: "d1", contacted_at: "2026-10-10", result: "Kontaktován", reason: "Drahé", note: null, remind_on: null, created_at: "x" }],
+        contacts: [
+          {
+            id: "c",
+            dog_id: "d1",
+            contacted_at: "2026-10-10",
+            result: "Kontaktován",
+            reason: "Drahé",
+            note: null,
+            remind_on: null,
+            created_at: "x",
+          },
+        ],
       },
       60,
       "2026-10-11",

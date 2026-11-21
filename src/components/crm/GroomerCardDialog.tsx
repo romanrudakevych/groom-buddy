@@ -2,12 +2,33 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { dogPhotoSignedUrl, formatDate, setDogPhoto, useCrmMutation, type CrmData, type Dog } from "@/lib/crm";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  dogPhotoSignedUrl,
+  formatDate,
+  setDogPhoto,
+  useCrmMutation,
+  type CrmData,
+  type Dog,
+} from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 
 /** Groomer-facing card: big photo, haircut instructions, quick photo upload. No prices or contacts. */
-export function GroomerCardDialog({ dog, data, onClose }: { dog: Dog; data: CrmData; onClose: () => void }) {
+export function GroomerCardDialog({
+  dog,
+  data,
+  onClose,
+}: {
+  dog: Dog;
+  data: CrmData;
+  onClose: () => void;
+}) {
   const { t, tr } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [fullUrl, setFullUrl] = useState<string | null>(null);
@@ -18,7 +39,9 @@ export function GroomerCardDialog({ dog, data, onClose }: { dog: Dog; data: CrmD
     let alive = true;
     setFullUrl(null);
     if (dog.photo_path) {
-      dogPhotoSignedUrl(dog.photo_path).then((u) => alive && setFullUrl(u)).catch(() => {});
+      dogPhotoSignedUrl(dog.photo_path)
+        .then((u) => alive && setFullUrl(u))
+        .catch(() => {});
     }
     return () => {
       alive = false;
@@ -45,7 +68,11 @@ export function GroomerCardDialog({ dog, data, onClose }: { dog: Dog; data: CrmD
           <div className="space-y-2">
             {photo ? (
               <button type="button" onClick={() => setZoom(true)} className="block w-full">
-                <img src={photo} alt={dog.name} className="max-h-[60dvh] w-full rounded-lg border object-contain" />
+                <img
+                  src={photo}
+                  alt={dog.name}
+                  className="max-h-[60dvh] w-full rounded-lg border object-contain"
+                />
               </button>
             ) : (
               <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-muted/30 text-muted-foreground">
@@ -86,7 +113,8 @@ export function GroomerCardDialog({ dog, data, onClose }: { dog: Dog; data: CrmD
               {last ? (
                 <p className="whitespace-pre-wrap">
                   <span className="text-muted-foreground">
-                    {formatDate(last.date)} · {data.groomers.find((g) => g.id === last.groomer_id)?.name ?? "—"}:{" "}
+                    {formatDate(last.date)} ·{" "}
+                    {data.groomers.find((g) => g.id === last.groomer_id)?.name ?? "—"}:{" "}
                   </span>
                   {last.haircut_notes}
                 </p>
@@ -102,7 +130,9 @@ export function GroomerCardDialog({ dog, data, onClose }: { dog: Dog; data: CrmD
               </p>
               <p>
                 <span className="text-muted-foreground">{t("healthStatus")}: </span>
-                {healthy ? t("isHealthy") : `${t("notHealthy")}${dog.health_status ? ` — ${dog.health_status}` : ""}`}
+                {healthy
+                  ? t("isHealthy")
+                  : `${t("notHealthy")}${dog.health_status ? ` — ${dog.health_status}` : ""}`}
               </p>
               {dog.brushes_teeth ? (
                 <p>

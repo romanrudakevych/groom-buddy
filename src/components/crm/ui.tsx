@@ -139,7 +139,8 @@ export function CheckList({
   empty?: string;
 }) {
   const { t } = useI18n();
-  if (!items.length) return <p className="text-sm text-muted-foreground">{empty ?? t("noItems")}</p>;
+  if (!items.length)
+    return <p className="text-sm text-muted-foreground">{empty ?? t("noItems")}</p>;
   return (
     <div className="max-h-48 space-y-1 overflow-y-auto rounded border p-2">
       {items.map((i) => (

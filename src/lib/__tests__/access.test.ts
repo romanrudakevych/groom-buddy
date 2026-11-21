@@ -27,3 +27,25 @@ describe("administrator restricted sections", () => {
     }
   });
 });
+
+describe("page access by role", () => {
+  it("lets a groomer open only the base groomer pages", () => {
+    for (const path of ["/kalendar", "/klienti", "/klienti/c1", "/psi/d1", "/groomeri"]) {
+      expect(canOpenPath("groomer", path)).toBe(true);
+    }
+    for (const path of ["/", "/sablony", "/nastaveni", "/kassa", "/reporty", "/logs"]) {
+      expect(canOpenPath("groomer", path)).toBe(false);
+    }
+  });
+  it("unlocks extra pages for a groomer with the matching permission", () => {
+    expect(canOpenPath("groomer", "/reporty", new Set(["reports"]))).toBe(true);
+    expect(canOpenPath("groomer", "/kassa", new Set(["reports"]))).toBe(false);
+  });
+  it("does not let an admin into Settings", () => {
+    expect(canOpenPath("admin", "/nastaveni")).toBe(false);
+    expect(canOpenPath("admin", "/sablony")).toBe(true);
+  });
+  it("matches whole path segments only", () => {
+    expect(canOpenPath("groomer", "/klientix")).toBe(false);
+  });
+});

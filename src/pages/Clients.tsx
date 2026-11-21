@@ -18,7 +18,6 @@ import { clientDogs, dogOwners, formatDate, useCrm } from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
 import { ReactivationList } from "@/components/crm/Reactivation";
 
-
 export function ClientBase() {
   const { data } = useCrm();
   const tab = useSearchParams()[0].get("tab") ?? undefined;
@@ -40,7 +39,12 @@ export function ClientBase() {
     return dates.length ? dates[dates.length - 1]! : null;
   };
 
-  const matches = (clientName: string, phone: string | null, dogNames: string[], extra: string[] = []) =>
+  const matches = (
+    clientName: string,
+    phone: string | null,
+    dogNames: string[],
+    extra: string[] = [],
+  ) =>
     !q ||
     clientName.toLowerCase().includes(q) ||
     (phone ?? "").toLowerCase().includes(q) ||
@@ -50,7 +54,15 @@ export function ClientBase() {
   const clients = data.clients
     .filter((c) => {
       const dogs = clientDogs(data, c.id);
-      if (!matches(c.name, c.phone, dogs.map((d) => d.name), (c.additional_contacts ?? []).flatMap((x) => [x.name, x.phone]))) return false;
+      if (
+        !matches(
+          c.name,
+          c.phone,
+          dogs.map((d) => d.name),
+          (c.additional_contacts ?? []).flatMap((x) => [x.name, x.phone]),
+        )
+      )
+        return false;
       if (salon && c.preferred_salon_id !== salon) return false;
       if (since) {
         const lv = lastVisit(c.id);
@@ -85,7 +97,11 @@ export function ClientBase() {
 
       <div className="max-w-md">
         <Field label={t("searchClientsDogs")}>
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("search")} />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("search")}
+          />
         </Field>
       </div>
 
@@ -150,10 +166,7 @@ export function ClientBase() {
                 return (
                   <TableRow key={c.id}>
                     <TableCell>
-                      <Link
-                        to={`/klienti/${c.id}`}
-                        className="font-medium underline"
-                      >
+                      <Link to={`/klienti/${c.id}`} className="font-medium underline">
                         {c.name}
                       </Link>
                     </TableCell>
@@ -168,9 +181,7 @@ export function ClientBase() {
                     <TableCell>{lv ? formatDate(lv) : "—"}</TableCell>
                     <TableCell>
                       <Button asChild variant="outline" size="sm">
-                        <Link to={`/klienti/${c.id}`}>
-                          {t("show")}
-                        </Link>
+                        <Link to={`/klienti/${c.id}`}>{t("show")}</Link>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -195,10 +206,7 @@ export function ClientBase() {
               {dogs.map((d) => (
                 <TableRow key={d.id}>
                   <TableCell>
-                    <Link
-                      to={`/psi/${d.id}`}
-                      className="font-medium underline"
-                    >
+                    <Link to={`/psi/${d.id}`} className="font-medium underline">
                       {d.name}
                     </Link>
                   </TableCell>
@@ -210,9 +218,7 @@ export function ClientBase() {
                   </TableCell>
                   <TableCell>
                     <Button asChild variant="outline" size="sm">
-                      <Link to={`/psi/${d.id}`}>
-                        {t("show")}
-                      </Link>
+                      <Link to={`/psi/${d.id}`}>{t("show")}</Link>
                     </Button>
                   </TableCell>
                 </TableRow>

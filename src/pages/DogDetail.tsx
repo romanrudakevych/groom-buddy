@@ -12,11 +12,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SectionTitle, StatusTag } from "@/components/crm/ui";
-import { DogAvatar, DogBadges, DogPhotoCard, KV, OpenOriginalButton } from "@/components/crm/DogBadges";
+import {
+  DogAvatar,
+  DogBadges,
+  DogPhotoCard,
+  KV,
+  OpenOriginalButton,
+} from "@/components/crm/DogBadges";
 import { useDialogs } from "@/components/crm/DialogProvider";
 import { czk, dogOwners, formatDate, lastGrooming, todayISO, useCrm } from "@/lib/crm";
 import { translatedServiceNames, useI18n } from "@/lib/i18n";
-
 
 export function DogDetail() {
   const { dogId } = useParams() as { dogId: string };
@@ -45,43 +50,51 @@ export function DogDetail() {
         <div className="flex gap-4">
           <div className="flex flex-col items-center gap-1">
             <DogAvatar dog={dog} size={96} />
-            {dog.photo_path ? <OpenOriginalButton path={dog.photo_path} label={t("openOriginal")} /> : null}
+            {dog.photo_path ? (
+              <OpenOriginalButton path={dog.photo_path} label={t("openOriginal")} />
+            ) : null}
           </div>
           <div>
-          <h1 className="text-2xl font-semibold">{dog.name}</h1>
-          <div className="text-sm text-muted-foreground">{dog.breed ?? "—"}</div>
-          <div className="mt-2">
-            <DogBadges dog={dog} full linkGroomer />
-          </div>
-          <div className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-            <div>
-              <span className="text-muted-foreground">{t("healthStatus")}: </span>
-              {dog.is_healthy ?? true ? t("isHealthy") : `${t("notHealthy")}${dog.health_status ? ` — ${dog.health_status}` : ""}`}
+            <h1 className="text-2xl font-semibold">{dog.name}</h1>
+            <div className="text-sm text-muted-foreground">{dog.breed ?? "—"}</div>
+            <div className="mt-2">
+              <DogBadges dog={dog} full linkGroomer />
             </div>
-            <div>
-              <span className="text-muted-foreground">{t("brushesTeeth")}: </span>
-              {dog.brushes_teeth
-                ? `${t("yes")}${dog.toothbrush_number ? ` · ${t("toothbrushNumber")}: ${dog.toothbrush_number}` : ""}`
-                : t("no")}
+            <div className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+              <div>
+                <span className="text-muted-foreground">{t("healthStatus")}: </span>
+                {(dog.is_healthy ?? true)
+                  ? t("isHealthy")
+                  : `${t("notHealthy")}${dog.health_status ? ` — ${dog.health_status}` : ""}`}
+              </div>
+              <div>
+                <span className="text-muted-foreground">{t("brushesTeeth")}: </span>
+                {dog.brushes_teeth
+                  ? `${t("yes")}${dog.toothbrush_number ? ` · ${t("toothbrushNumber")}: ${dog.toothbrush_number}` : ""}`
+                  : t("no")}
+              </div>
+              {dog.notes ? (
+                <div className="sm:col-span-2">
+                  <KV k={t("note")} v={<span className="whitespace-pre-wrap">{dog.notes}</span>} />
+                </div>
+              ) : null}
+              {(dog.extra_notes ?? []).map((n, i) => (
+                <div key={i} className="sm:col-span-2">
+                  <KV k={t("note")} v={<span className="whitespace-pre-wrap">{n}</span>} />
+                </div>
+              ))}
             </div>
-            {dog.notes ? (
-              <div className="sm:col-span-2">
-                <KV k={t("note")} v={<span className="whitespace-pre-wrap">{dog.notes}</span>} />
-              </div>
-            ) : null}
-            {(dog.extra_notes ?? []).map((n, i) => (
-              <div key={i} className="sm:col-span-2">
-                <KV k={t("note")} v={<span className="whitespace-pre-wrap">{n}</span>} />
-              </div>
-            ))}
-          </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => openDog(dog)}>
             {t("edit")}
           </Button>
-          {can("appointments_create") && (<Button onClick={() => openAppointment(null, { dog_id: dog.id })}>{t("recordVisit")}</Button>)}
+          {can("appointments_create") && (
+            <Button onClick={() => openAppointment(null, { dog_id: dog.id })}>
+              {t("recordVisit")}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -105,8 +118,14 @@ export function DogDetail() {
               <>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
                   <KV k={t("date")} v={formatDate(last.date)} />
-                  <KV k={t("groomer")} v={data.groomers.find((g) => g.id === last.groomer_id)?.name ?? "—"} />
-                  <KV k={t("services")} v={translatedServiceNames(data, last.serviceIds, tr) || "—"} />
+                  <KV
+                    k={t("groomer")}
+                    v={data.groomers.find((g) => g.id === last.groomer_id)?.name ?? "—"}
+                  />
+                  <KV
+                    k={t("services")}
+                    v={translatedServiceNames(data, last.serviceIds, tr) || "—"}
+                  />
                 </div>
                 {last.notes ? <p className="whitespace-pre-wrap">{last.notes}</p> : null}
               </>
@@ -195,7 +214,9 @@ export function DogDetail() {
                 <TableCell>
                   <StatusTag status={a.status} />
                 </TableCell>
-                <TableCell className="max-w-xs whitespace-pre-wrap">{a.haircut_notes || "—"}</TableCell>
+                <TableCell className="max-w-xs whitespace-pre-wrap">
+                  {a.haircut_notes || "—"}
+                </TableCell>
                 <TableCell>{a.behavior_during_visit ? tr(a.behavior_during_visit) : "—"}</TableCell>
                 <TableCell>
                   {a.actual_duration ? `${a.actual_duration} ${t("minuteShort")}` : "—"}

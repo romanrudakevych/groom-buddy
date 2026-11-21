@@ -22,7 +22,9 @@ export function SignInScreen() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: authRedirectUrl() });
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: authRedirectUrl(),
+        });
         if (error) throw error;
         toast.success(t("accessLinkSent"));
         setMode("in");
@@ -39,14 +41,37 @@ export function SignInScreen() {
       <form onSubmit={submit} className="w-full max-w-sm space-y-3 rounded-lg border bg-card p-6">
         <div className="text-center">
           <div className="text-lg font-semibold">{t("appName")}</div>
-          <div className="text-sm text-muted-foreground">{mode === "in" ? t("signIn") : t("forgotPassword")}</div>
+          <div className="text-sm text-muted-foreground">
+            {mode === "in" ? t("signIn") : t("forgotPassword")}
+          </div>
         </div>
-        <Input type="email" autoComplete="username" placeholder={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <Input
+          type="email"
+          autoComplete="username"
+          placeholder={t("email")}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
         {mode === "in" && (
-          <Input type="password" autoComplete="current-password" placeholder={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
+          <Input
+            type="password"
+            autoComplete="current-password"
+            placeholder={t("password")}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
+            required
+          />
         )}
-        <Button type="submit" className="w-full" disabled={busy}>{mode === "in" ? t("signIn") : t("sendAccessLink")}</Button>
-        <button type="button" className="block w-full text-center text-sm underline" onClick={() => setMode(mode === "in" ? "forgot" : "in")}>
+        <Button type="submit" className="w-full" disabled={busy}>
+          {mode === "in" ? t("signIn") : t("sendAccessLink")}
+        </Button>
+        <button
+          type="button"
+          className="block w-full text-center text-sm underline"
+          onClick={() => setMode(mode === "in" ? "forgot" : "in")}
+        >
           {mode === "in" ? t("forgotPassword") : t("backToSignIn")}
         </button>
         <p className="text-center text-xs text-muted-foreground">{t("inviteOnlyHint")}</p>
@@ -56,7 +81,13 @@ export function SignInScreen() {
 }
 
 /** Shown after an invite / access link: the employee creates their password (login = their email). */
-export function SetPasswordScreen({ onDone, email }: { onDone: () => void; email?: string | undefined }) {
+export function SetPasswordScreen({
+  onDone,
+  email,
+}: {
+  onDone: () => void;
+  email?: string | undefined;
+}) {
   const { t } = useI18n();
   const [password, setPassword] = useState("");
   const [repeat, setRepeat] = useState("");
@@ -81,9 +112,27 @@ export function SetPasswordScreen({ onDone, email }: { onDone: () => void; email
           <p className="mt-1 text-xs text-muted-foreground">{t("setPasswordWelcome")}</p>
         </div>
         {email && <Input type="email" value={email} readOnly autoComplete="username" />}
-        <Input type="password" autoComplete="new-password" placeholder={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
-        <Input type="password" autoComplete="new-password" placeholder={t("passwordRepeat")} value={repeat} onChange={(e) => setRepeat(e.target.value)} minLength={6} required />
-        <Button type="submit" className="w-full" disabled={busy}>{t("saveAndEnter")}</Button>
+        <Input
+          type="password"
+          autoComplete="new-password"
+          placeholder={t("password")}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          minLength={6}
+          required
+        />
+        <Input
+          type="password"
+          autoComplete="new-password"
+          placeholder={t("passwordRepeat")}
+          value={repeat}
+          onChange={(e) => setRepeat(e.target.value)}
+          minLength={6}
+          required
+        />
+        <Button type="submit" className="w-full" disabled={busy}>
+          {t("saveAndEnter")}
+        </Button>
       </form>
     </div>
   );

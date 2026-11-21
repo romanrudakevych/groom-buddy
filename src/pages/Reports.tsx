@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarList, Kpi, Segmented } from "@/components/crm/ui";
-import { STATUSES, czk, monthRange, paymentSplit, retentionRate,
-  groomerRetention, useCrm } from "@/lib/crm";
+import {
+  STATUSES,
+  czk,
+  monthRange,
+  paymentSplit,
+  retentionRate,
+  groomerRetention,
+  useCrm,
+} from "@/lib/crm";
 import { useI18n } from "@/lib/i18n";
-
 
 export function Reports() {
   const { data } = useCrm();
@@ -60,8 +66,16 @@ export function Reports() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi label={t("cashRevenue")} value={czk(paymentSplit(filtered).cash)} hint={t("completedOnly")} />
-        <Kpi label={t("cardRevenue")} value={czk(paymentSplit(filtered).card)} hint={t("completedOnly")} />
+        <Kpi
+          label={t("cashRevenue")}
+          value={czk(paymentSplit(filtered).cash)}
+          hint={t("completedOnly")}
+        />
+        <Kpi
+          label={t("cardRevenue")}
+          value={czk(paymentSplit(filtered).card)}
+          hint={t("completedOnly")}
+        />
         <Kpi
           label={t("clientRetention")}
           value={`${retentionRate(filtered)} %`}

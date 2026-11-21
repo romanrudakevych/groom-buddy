@@ -1,9 +1,46 @@
 import { describe, expect, it } from "vitest";
-import { dayCash, drawerBalance, isUpcomingStatus, type Appointment, type CashOperation } from "../crm";
+import {
+  cashOpSign,
+  dayCash,
+  drawerBalance,
+  isUpcomingStatus,
+  type Appointment,
+  type CashOperation,
+} from "../crm";
 
-const groomers = [{ id: "g1", salon_id: "s1" }, { id: "g2", salon_id: "s2" }] as never;
-const appt = (p: Partial<Appointment>) => ({ id: Math.random() + "", dog_id: "d", groomer_id: "g1", date: "2026-10-29", time: "09:00", planned_duration: 60, price: 1000, status: "Dokončeno", actual_duration: 60, behavior_during_visit: null, haircut_notes: null, notes: null, paid_by_card: false, serviceIds: [], ...p }) as Appointment;
-const op = (p: Partial<CashOperation>) => ({ id: "o", salon_id: "s1", type: "Vklad", amount: 0, date: "2026-10-29", note: null, created_at: "", ...p }) as CashOperation;
+const groomers = [
+  { id: "g1", salon_id: "s1" },
+  { id: "g2", salon_id: "s2" },
+] as never;
+const appt = (p: Partial<Appointment>) =>
+  ({
+    id: Math.random() + "",
+    dog_id: "d",
+    groomer_id: "g1",
+    date: "2026-10-29",
+    time: "09:00",
+    planned_duration: 60,
+    price: 1000,
+    status: "Dokončeno",
+    actual_duration: 60,
+    behavior_during_visit: null,
+    haircut_notes: null,
+    notes: null,
+    paid_by_card: false,
+    serviceIds: [],
+    ...p,
+  }) as Appointment;
+const op = (p: Partial<CashOperation>) =>
+  ({
+    id: "o",
+    salon_id: "s1",
+    type: "Vklad",
+    amount: 0,
+    date: "2026-10-29",
+    note: null,
+    created_at: "",
+    ...p,
+  }) as CashOperation;
 
 describe("day cash", () => {
   const data = {
@@ -15,10 +52,20 @@ describe("day cash", () => {
       appt({ price: 900, groomer_id: "g2" }),
       appt({ price: 700, date: "2026-10-28" }),
     ],
-    cashOps: [op({ type: "Vklad", amount: 2000 }), op({ type: "Výdaj", amount: 300 }), op({ type: "Inkaso", amount: 1000, date: "2026-10-28" })],
+    cashOps: [
+      op({ type: "Vklad", amount: 2000 }),
+      op({ type: "Výdaj", amount: 300 }),
+      op({ type: "Inkaso", amount: 1000, date: "2026-10-28" }),
+    ],
   };
   it("counts only today's completed cash visits of the salon plus operations", () => {
-    expect(dayCash(data, "s1", "2026-10-29")).toEqual({ visitsCash: 1200, card: 800, deposits: 2000, outflows: 300, net: 2900 });
+    expect(dayCash(data, "s1", "2026-10-29")).toEqual({
+      visitsCash: 1200,
+      card: 800,
+      deposits: 2000,
+      outflows: 300,
+      net: 2900,
+    });
   });
   it("expected drawer includes previous days", () => {
     expect(drawerBalance(data, "s1", "2026-10-29")).toBe(700 - 1000 + 1200 + 2000 - 300);
@@ -26,5 +73,31 @@ describe("day cash", () => {
   it("confirmed visits stay upcoming", () => {
     expect(isUpcomingStatus("Potvrzeno")).toBe(true);
     expect(isUpcomingStatus("Dokončeno")).toBe(false);
+  });
+});
+
+describe("drawer balance", () => {
+  const data = {
+    groomers,
+    appointments: [
+      appt({ price: 1000, date: "2026-10-27" }),
+      appt({ price: 600, date: "2026-10-30" }), // after the day
+      appt({ price: 900, paid_by_card: true }), // card never reaches the drawer
+    ],
+    cashOps: [
+      op({ type: "Vklad", amount: 500, date: "2026-10-27" }),
+      op({ type: "Výdaj", amount: 200 }),
+      op({ type: "Inkaso", amount: 1000, date: "2026-10-30" }), // after the day
+      op({ type: "Vklad", amount: 999, salon_id: "s2" }), // other salon
+    ],
+  };
+  it("adds cash visits and deposits up to the day, minus expenses and collections", () => {
+    expect(drawerBalance(data, "s1", "2026-10-29")).toBe(1000 + 500 - 200);
+    expect(drawerBalance(data, "s1", "2026-10-30")).toBe(1000 + 600 + 500 - 200 - 1000);
+  });
+  it("signs cash operations", () => {
+    expect(cashOpSign("Vklad")).toBe(1);
+    expect(cashOpSign("Výdaj")).toBe(-1);
+    expect(cashOpSign("Inkaso")).toBe(-1);
   });
 });

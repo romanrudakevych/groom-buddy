@@ -11,10 +11,13 @@ npm run dev                      # Vite dev server, http://localhost:5173 (needs
 npm run build                    # production build to dist/
 npm run lint                     # eslint (prettier runs as an eslint rule)
 npm run format                   # prettier --write .
-npx tsc --noEmit                 # type-check (no script for it; tsconfig is very strict)
-npx vitest run                   # all tests (src/lib/__tests__)
+npm run typecheck                # tsc --noEmit (tsconfig is very strict)
+npm test                         # vitest run: unit + component tests (src/**/*.test.{ts,tsx})
 npx vitest run src/lib/__tests__/booking.test.ts   # single file
 npx vitest run -t "blocks Cash"                    # single test by name
+npm run db:start                 # local Supabase stack from the migrations (needs Docker)
+npm run test:db                  # RLS / trigger tests in tests/db against the local stack
+npm run test:e2e                 # Playwright specs in e2e/ against the local stack
 ```
 
 Supabase CLI (a dev dependency; link it once with `npx supabase link --project-ref <ref>`):
@@ -50,4 +53,6 @@ The schema exists only as SQL migrations. Never edit an applied migration; add a
 ## Conventions
 
 - `tsconfig` turns on `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `noPropertyAccessFromIndexSignature`, so index access returns `T | undefined` and env vars use bracket access (`import.meta.env["VITE_…"]`).
+- Tests: unit tests in `src/lib/__tests__` (fixtures in `fixtures.ts`); component tests next to components in `__tests__/`, starting with `// @vitest-environment jsdom` and mocking Supabase with `vi.mock("@/integrations/supabase/client", () => import("@/test/supabase-mock"))`; find UI text through `strings.cs` from `i18n.tsx` rather than hard-coding it. A new access rule needs a test in `tests/db/rls.test.ts` as well.
+- CI (`.github/workflows/ci.yml`) runs lint, typecheck, tests and build on PRs and non-master pushes, then the DB and E2E tests on a local Supabase stack; `deploy-pages.yml` calls it before deploying `master`. Lint fails on Prettier formatting, so run `npm run format` before committing.
 - Hosting is a static SPA. Unknown paths fall back to `index.html` via `public/_redirects` (Netlify/Cloudflare) and `vercel.json`. GitHub Pages (`.github/workflows/deploy-pages.yml`) serves it from `/groom-buddy/`: the build sets `VITE_BASE`, the router uses `import.meta.env.BASE_URL` as basename, and `404.html` (a copy of `index.html`) is the fallback.

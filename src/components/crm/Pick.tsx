@@ -35,5 +35,7 @@ export function Pick({
   );
 }
 
-export const opts = (values: readonly string[], labelFor: (value: string) => string = (value) => value) =>
-  values.map((value) => ({ value, label: labelFor(value) }));
+export const opts = (
+  values: readonly string[],
+  labelFor: (value: string) => string = (value) => value,
+) => values.map((value) => ({ value, label: labelFor(value) }));
